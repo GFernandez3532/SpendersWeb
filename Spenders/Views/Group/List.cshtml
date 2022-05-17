@@ -13,6 +13,15 @@
             <div>
                 <h2>@group.Name.</h2>
                 <h5>@group.Description</h5>
+
+                <div>
+                    @foreach (var user in group.SpendersUser)
+                    {
+                    <ul>
+                        <li>@user.Email</li>
+                    </ul>
+                    }
+                </div>            
             </div>
         }
     </body>

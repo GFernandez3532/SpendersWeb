@@ -12,6 +12,8 @@ namespace Spenders.Models
 
         IEnumerable<GroupMember> GetAllGroupMembersByGroupId(int GroupId);
 
+        IEnumerable<GroupMember> GetAllGroupsByUserID(int spenderUserId);
+
 
     }
 }

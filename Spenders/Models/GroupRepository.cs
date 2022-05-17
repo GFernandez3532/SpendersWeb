@@ -7,17 +7,29 @@ namespace Spenders.Models
 {
     public class GroupRepository : IGroupRepository
     {
+        private readonly ISpendersUserRepository _spendersUserRepository = new SpendersUserRepository();
         public IEnumerable<Group> GetAllGroups => new List<Group>
         {
-            new Group{GroupId = 1, Name ="Testing Group 1", Description ="Testing the group number 1"},
-            new Group{GroupId = 2, Name ="Testing Group 2", Description ="Testing the groups number 2"},
-            new Group{GroupId = 3, Name ="Testing Group 3", Description ="Testing the groups number 3"}
+            new Group{GroupId = 1, Name ="Spending at Home", Description ="Spending some money at home",
+                SpendersUser = _spendersUserRepository.GetAllUsers.ToList() 
+                },
+            new Group{GroupId = 1, Name ="Spending during vacation", Description ="Spendings during our holidays",
+                SpendersUser = _spendersUserRepository.GetAllUsers.ToList()
 
+                },
+            new Group{GroupId = 1, Name ="Spending at the office", Description ="Spendings during work hours",
+                SpendersUser = _spendersUserRepository.GetAllUsers.ToList()
+                }
         };
 
         public Group GetGroupByGroupId(int groupId)
         {
             return GetAllGroups.FirstOrDefault(c => c.GroupId == groupId);
+        }
+
+        public IEnumerable<Group> GetGroupsByUserId(int userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

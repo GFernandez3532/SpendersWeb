@@ -10,8 +10,9 @@ namespace Spenders.Models
     {
         public IEnumerable<SpendersUser> GetAllUsers => new List<SpendersUser>
         {
-            new SpendersUser { Email="GonzaloFer@gmail", FirstName="Gonzalo", LastName="Fernandez" },
-            new SpendersUser { Email="Ahague@gmail", FirstName="Ashley", LastName="Hague" }
+            new SpendersUser { Email="GonzaloFer@gmail.com", FirstName="Gonzalo", LastName="Fernandez" },
+            new SpendersUser { Email="Ahague@gmail.com", FirstName="Ashley", LastName="Hague" },
+            new SpendersUser { Email="Eduardo@gmail.com", FirstName="Eduardo", LastName="Hammon" }
         };
 
         public SpendersUser GetAllUsersByEmail(string email)

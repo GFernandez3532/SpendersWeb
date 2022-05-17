@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Spenders.Models;
 
 namespace Spenders.Areas.Identity.Data
 {
@@ -17,6 +18,9 @@ namespace Spenders.Areas.Identity.Data
         [PersonalData]
         [Column(TypeName = "nvarchar(100)")]
         public string LastName { get; set; }
+
+        public IEnumerable<Group>  Group{ get; set; }
+
     }
 
 }

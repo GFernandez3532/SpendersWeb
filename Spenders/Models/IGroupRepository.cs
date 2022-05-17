@@ -7,10 +7,11 @@ namespace Spenders.Models
 {
    public interface IGroupRepository
     {
-        IEnumerable<Group>  GetAllGroups { get;}
+        IEnumerable<Group> GetAllGroups { get;}
 
         Group GetGroupByGroupId(int groupId);
 
+        IEnumerable<Group> GetGroupsByUserId(int userId);
 
     }
 }
