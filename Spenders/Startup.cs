@@ -27,7 +27,6 @@ namespace Spenders
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddScoped<IGroupRepository, GroupRepository>();
-            services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
             services.AddScoped<ISpendersUserRepository, SpendersUserRepository>();
         }
 

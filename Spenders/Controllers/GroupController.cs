@@ -11,13 +11,11 @@ namespace Spenders.Controllers
     {
 
         private readonly IGroupRepository _groupRepository;
-        private readonly IGroupMemberRepository _groupMemberRepository;
 
 
-        public GroupController(IGroupRepository groupRepository, IGroupMemberRepository groupMemberRepository)
+        public GroupController(IGroupRepository groupRepository)
         {
             _groupRepository = groupRepository;
-            _groupMemberRepository = groupMemberRepository;
         }
 
         public ViewResult List()
