@@ -1,13 +1,5 @@
-﻿@model IEnumerable<Spenders.Models.Group> 
+﻿@model IEnumerable<Group> 
 
-    <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>All groups created</title>
-    </head>
-    <body>
         @foreach (var group in Model)
         {
             <div>
@@ -18,11 +10,9 @@
                     @foreach (var user in group.SpendersUser)
                     {
                     <ul>
-                        <li>@user.Email</li>
+                        <li>@user.FirstName @user.LastName</li>
                     </ul>
                     }
-                </div>            
+                </div>
             </div>
         }
-    </body>
-    </html>
