@@ -9,9 +9,7 @@ namespace Spenders.ViewModels
 {
     public class GroupDetailsViewModel
     {
-        public IEnumerable<SpendersUser> Users{ get; set; }
         public IEnumerable<Group> Groups { get; set; }
-        public IEnumerable<GroupMember> groupMembers{ get; set; }
 
 
     }

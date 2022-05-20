@@ -1,18 +1,24 @@
-﻿@model IEnumerable<Group> 
+﻿@model Spenders.ViewModels.GroupDetailsViewModel
 
-        @foreach (var group in Model)
-        {
-            <div>
-                <h2>@group.Name.</h2>
-                <h5>@group.Description</h5>
+<div class="card-deck">
 
+    @foreach (var group in Model.Groups)
+    {
+        <div class="card" style="width: 21rem;">
+            <div class="card-body">
+                <h4 class="card-title">@group.Name</h4>
+                <h6 class="card-title">@group.Description</h6>
                 <div>
-                    @foreach (var user in group.SpendersUser)
+                    @foreach (var groupSpenderUser in group.GroupSpendersUsers)
                     {
-                    <ul>
-                        <li>@user.FirstName @user.LastName</li>
-                    </ul>
+                        <ul>
+                            <li>@groupSpenderUser.SpendersUser.FirstName @groupSpenderUser.SpendersUser.LastName</li>
+                        </ul>
                     }
                 </div>
+                <a href="#" class="btn btn-primary">Manage group</a>
+                <a href="#" class="btn btn-success">Add new entries</a>
             </div>
-        }
+        </div>
+    }
+</div>

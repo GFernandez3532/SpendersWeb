@@ -19,7 +19,7 @@ namespace Spenders.Areas.Identity.Data
         [Column(TypeName = "nvarchar(100)")]
         public string LastName { get; set; }
 
-        public IEnumerable<Group>  Group{ get; set; }
+        public ICollection<GroupSpendersUser> GroupSpendersUsers { get; set; }
 
     }
 

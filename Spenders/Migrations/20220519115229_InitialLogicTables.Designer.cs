@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spenders.Data;
 
 namespace Spenders.Migrations
 {
     [DbContext(typeof(SpendersContext))]
-    partial class SpendersContextModelSnapshot : ModelSnapshot
+    [Migration("20220519115229_InitialLogicTables")]
+    partial class InitialLogicTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,50 +225,6 @@ namespace Spenders.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "b0483c8b-d986-4a8c-b69b-9b5818c1736e",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "b4c3a87d-ead8-47eb-94fc-ac88847aa86c",
-                            Email = "Gonza@Gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "Gonzalo",
-                            LastName = "Fernandez",
-                            LockoutEnabled = false,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "a4ca493a-4ab0-4794-80c0-feee5f16634a",
-                            TwoFactorEnabled = false
-                        },
-                        new
-                        {
-                            Id = "90d4a72d-9c04-4eab-8511-54bd704134a9",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "08aa430f-064a-4553-af1c-1063c649eb5f",
-                            Email = "Ashley@Gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "Ashley",
-                            LastName = "Hague",
-                            LockoutEnabled = false,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "d41fa4c0-e38c-4c42-9b2f-da9f9325847a",
-                            TwoFactorEnabled = false
-                        },
-                        new
-                        {
-                            Id = "03278b25-2f45-470a-af22-20afc060f179",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "73c51470-2307-4cea-a6e5-1fde3f06dd10",
-                            Email = "Eduardo@Gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "Eduardo",
-                            LastName = "Simonson",
-                            LockoutEnabled = false,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "2f753821-d49c-43c6-a82e-032c2dfc3599",
-                            TwoFactorEnabled = false
-                        });
                 });
 
             modelBuilder.Entity("Spenders.Models.Group", b =>
@@ -285,26 +243,6 @@ namespace Spenders.Migrations
                     b.HasKey("GroupId");
 
                     b.ToTable("Group");
-
-                    b.HasData(
-                        new
-                        {
-                            GroupId = 1,
-                            Description = "Spendings at home",
-                            Name = "Spending at home"
-                        },
-                        new
-                        {
-                            GroupId = 2,
-                            Description = "Spendings at the office",
-                            Name = "Spending at home"
-                        },
-                        new
-                        {
-                            GroupId = 3,
-                            Description = "Spendings during holiday",
-                            Name = "Spending at home"
-                        });
                 });
 
             modelBuilder.Entity("Spenders.Models.GroupSpendersUser", b =>
@@ -330,50 +268,6 @@ namespace Spenders.Migrations
                     b.HasIndex("SpendersUserId1");
 
                     b.ToTable("GroupSpendersUser");
-
-                    b.HasData(
-                        new
-                        {
-                            GroupSpendersUserID = 1,
-                            GroupId = 1,
-                            SpendersUserId = 1
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 2,
-                            GroupId = 1,
-                            SpendersUserId = 2
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 3,
-                            GroupId = 2,
-                            SpendersUserId = 2
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 4,
-                            GroupId = 2,
-                            SpendersUserId = 3
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 5,
-                            GroupId = 3,
-                            SpendersUserId = 1
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 6,
-                            GroupId = 3,
-                            SpendersUserId = 2
-                        },
-                        new
-                        {
-                            GroupSpendersUserID = 7,
-                            GroupId = 3,
-                            SpendersUserId = 3
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

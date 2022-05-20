@@ -12,8 +12,7 @@ namespace Spenders.Models
         public string Description { get; set; }
         public string Name { get; set; }
 
-        public ICollection<SpendersUser> SpendersUser { get; set; }
-
+        public ICollection<GroupSpendersUser> GroupSpendersUsers { get; set; }
 
     }
 }

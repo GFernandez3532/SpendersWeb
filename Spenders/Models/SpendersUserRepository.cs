@@ -1,4 +1,5 @@
 ﻿using Spenders.Areas.Identity.Data;
+using Spenders.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +9,17 @@ namespace Spenders.Models
 {
     public class SpendersUserRepository : ISpendersUserRepository
     {
-        public IEnumerable<SpendersUser> GetAllUsers => new List<SpendersUser>
+        private readonly SpendersContext _spendersContext;
+
+        public SpendersUserRepository(SpendersContext spendersContext)
         {
-            new SpendersUser { Email="GonzaloFer@gmail.com", FirstName="Gonzalo", LastName="Fernandez" },
-            new SpendersUser { Email="Ahague@gmail.com", FirstName="Ashley", LastName="Hague" },
-            new SpendersUser { Email="Eduardo@gmail.com", FirstName="Eduardo", LastName="Hammon" }
-        };
+            _spendersContext = spendersContext;
+        }
+        public IEnumerable<SpendersUser> GetAllUsers => _spendersContext.SpendersUser;
 
         public SpendersUser GetAllUsersByEmail(string email)
         {
-            return GetAllUsers.FirstOrDefault(c => c.Email == email);
+            return _spendersContext.SpendersUser.FirstOrDefault(s => s.Email == email);
         }
     }
 }

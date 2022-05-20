@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Spenders.Models;
+using Spenders.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,13 @@ namespace Spenders.Controllers
             _groupRepository = groupRepository;
         }
 
-        public ViewResult List()
+        public IActionResult List()
         {
-            return View(_groupRepository.GetAllGroups);
+            var groupDetailsViewModel = new GroupDetailsViewModel();
+            groupDetailsViewModel.Groups = _groupRepository.GetAllGroups;
+
+            return View(groupDetailsViewModel);
+
         }
 
         public ViewResult GetGroupByGroupId(int groupId)
