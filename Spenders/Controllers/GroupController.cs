@@ -38,5 +38,12 @@ namespace Spenders.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult CreateGroup(Group group)
+        {
+
+            return View();
+        }
     }
 }

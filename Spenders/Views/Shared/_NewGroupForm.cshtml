@@ -1,0 +1,42 @@
+﻿@model Spenders.ViewModels.GroupDetailsViewModel
+
+<button class="btn btn-info btn-sm border-dark" type="button" data-toggle="modal" data-target="#myModal">Add new Group!</button>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        Modal content
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New group</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="CreateGroup" role="form" method="post">
+
+                    <div asp-validation-summary="All">
+                        <div class="form-group">
+                            <label asp-for="Group.Name"></label>
+                            <div>
+                                <input asp-for="Group.Name" class="form-control" />
+                                <span asp-validation-for="Group.Name" class="bg-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Group.Description"></label>
+                            <div>
+                                <input asp-for="Group.Description" class="form-control" />
+                                <span asp-validation-for="Group.Description" class="bg-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

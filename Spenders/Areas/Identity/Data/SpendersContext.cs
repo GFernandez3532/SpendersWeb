@@ -20,6 +20,8 @@ namespace Spenders.Data
         public DbSet<Group> Group { get; set; }
         public DbSet<GroupSpendersUser> GroupSpendersUser { get; set; }
         public DbSet<SpendersUser> SpendersUser { get; set; }
+        public DbSet<Expense> Expenses{ get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -43,6 +45,9 @@ namespace Spenders.Data
             builder.Entity<GroupSpendersUser>().HasData(new GroupSpendersUser { GroupSpendersUserID = 5, GroupId = 3, SpendersUserId = 1 });
             builder.Entity<GroupSpendersUser>().HasData(new GroupSpendersUser { GroupSpendersUserID = 6, GroupId = 3, SpendersUserId = 2 });
             builder.Entity<GroupSpendersUser>().HasData(new GroupSpendersUser { GroupSpendersUserID = 7, GroupId = 3, SpendersUserId = 3 });
+
+            builder.Entity<Expense>().HasData(new Expense { ExpenseId = 1, Name = "New world", GroupId = 1});
+            builder.Entity<Expense>().HasData(new Expense { ExpenseId = 2, Name = "Take out", GroupId = 1});
         }
     }
 }

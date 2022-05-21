@@ -11,6 +11,10 @@ namespace Spenders.ViewModels
     {
         public IEnumerable<Group> Groups { get; set; }
 
+        public Group Group { get; set; }
+
+        public SpendersUser SpendersUser { get; set; }
+
 
     }
 }
