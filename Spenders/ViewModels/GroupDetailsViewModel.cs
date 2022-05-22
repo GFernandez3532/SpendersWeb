@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Spenders.Areas.Identity.Pages.Account.Manage;
 
 namespace Spenders.ViewModels
 {
@@ -13,7 +14,8 @@ namespace Spenders.ViewModels
 
         public Group Group { get; set; }
 
-        public SpendersUser SpendersUser { get; set; }
+        public IndexModel IndexModel { get; set; }
+        public EmailModel Email { get; set; }
 
 
     }

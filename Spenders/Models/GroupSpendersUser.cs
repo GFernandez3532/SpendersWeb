@@ -10,7 +10,7 @@ namespace Spenders.Models
     {
         public int GroupSpendersUserID { get; set; }
         public int GroupId { get; set; }
-        public int SpendersUserId { get; set; }
+        public string SpendersUserId { get; set; }
         public Group Group { get; set; }
         public SpendersUser SpendersUser { get; set; }
     }

@@ -74,7 +74,7 @@ namespace Spenders.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/Group/List");
+            returnUrl = returnUrl ?? Url.Content("~/Group/Index");
 
             if (ModelState.IsValid)
             {

@@ -11,7 +11,11 @@ namespace Spenders.Models
 
         Group GetGroupByGroupId(int groupId);
 
-        IEnumerable<Group> GetGroupsByUserId(int userId);
+        IEnumerable<Group> GetGroupsByUserId(string userId);
+
+        Group GetGroupByName(string name);
+
+        void CreateGroup(Group group);
 
     }
 }

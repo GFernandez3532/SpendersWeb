@@ -34,7 +34,8 @@ namespace Spenders
             services.AddRazorPages();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<ISpendersUserRepository, SpendersUserRepository>();
-            
+            services.AddScoped<IGroupSpendersUserRepository, GroupSpendersUserRepository>();
+            services.AddScoped<IExpenseRepository, ExpenseRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +63,7 @@ namespace Spenders
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Group}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

@@ -1,0 +1,24 @@
+﻿@model Spenders.ViewModels.GroupDetailsViewModel
+
+    @foreach (var group in Model.Groups)
+    {
+        <div>
+        <div class="card border-dark" style="width: 21rem;">
+            <div class="card-body">
+                <h4 class="card-title">@group.Name</h4>
+                <h6 class="card-title">@group.Description</h6>
+                <div>
+                    @foreach (var groupSpenderUser in group.GroupSpendersUsers)
+                    {
+                        <ul>
+                            <li>@groupSpenderUser.SpendersUser.FirstName @groupSpenderUser.SpendersUser.LastName</li>
+                        </ul>
+                    }
+                </div>
+                <a asp-controller="Group" asp-action="Details" asp-route-groupId="@group.GroupId" class="btn btn-primary">Manage group</a>
+                <a href="#" class="btn btn-success">Add new entries</a>
+            </div>
+        </div>
+        </div>
+    }
+

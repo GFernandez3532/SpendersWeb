@@ -15,7 +15,7 @@ namespace Spenders.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.24")
+                .HasAnnotation("ProductVersion", "3.1.25")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -227,44 +227,44 @@ namespace Spenders.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "94a339f4-1fe8-474d-a9c3-03c0cde4fe48",
+                            Id = "e9cb1cc7-16a3-4117-b2b3-bd37b80f29a0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c2b4142c-a44f-4bce-b85c-4d4dbbb00695",
+                            ConcurrencyStamp = "00c199bf-79b7-49b5-bcde-ff78f06b453e",
                             Email = "Gonza@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Gonzalo",
                             LastName = "Fernandez",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ae05c3b5-4e7d-4ac6-b781-d22512fcd79d",
+                            SecurityStamp = "142c413f-e654-4e05-a3c2-862bf6036388",
                             TwoFactorEnabled = false
                         },
                         new
                         {
-                            Id = "0d84d485-67b4-4bf7-b070-04982c8a0c4b",
+                            Id = "a66dd0bb-c79e-4950-8056-043911707340",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "152903bb-998d-4d48-afa3-4445ddc32bf9",
+                            ConcurrencyStamp = "7ea8f52f-df91-4d9a-9e39-66931f23f884",
                             Email = "Ashley@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ashley",
                             LastName = "Hague",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3df074bc-910f-49bc-9da6-2d7f221a481f",
+                            SecurityStamp = "200457b8-9227-4d2e-a43d-2d6045d3aac1",
                             TwoFactorEnabled = false
                         },
                         new
                         {
-                            Id = "b567d27e-dbe9-4526-8412-852cc11923ce",
+                            Id = "d98ba014-7273-4b4c-8721-8afe6c64b2dc",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2105b6c0-9a2c-43a6-9c1a-cb622e7127b6",
+                            ConcurrencyStamp = "f2b02d09-c204-4f12-804d-034e490b43ae",
                             Email = "Eduardo@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Eduardo",
                             LastName = "Simonson",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "eb138eef-b4f0-4cbb-85d5-c6a2e2818708",
+                            SecurityStamp = "b48aa48a-1f62-4eef-ac32-903925639a27",
                             TwoFactorEnabled = false
                         });
                 });
@@ -287,6 +287,20 @@ namespace Spenders.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("Expenses");
+
+                    b.HasData(
+                        new
+                        {
+                            ExpenseId = 1,
+                            GroupId = 1,
+                            Name = "New world"
+                        },
+                        new
+                        {
+                            ExpenseId = 2,
+                            GroupId = 1,
+                            Name = "Take out"
+                        });
                 });
 
             modelBuilder.Entity("Spenders.Models.Group", b =>
@@ -337,17 +351,14 @@ namespace Spenders.Migrations
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SpendersUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SpendersUserId1")
+                    b.Property<string>("SpendersUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("GroupSpendersUserID");
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("SpendersUserId1");
+                    b.HasIndex("SpendersUserId");
 
                     b.ToTable("GroupSpendersUser");
 
@@ -356,43 +367,43 @@ namespace Spenders.Migrations
                         {
                             GroupSpendersUserID = 1,
                             GroupId = 1,
-                            SpendersUserId = 1
+                            SpendersUserId = "1"
                         },
                         new
                         {
                             GroupSpendersUserID = 2,
                             GroupId = 1,
-                            SpendersUserId = 2
+                            SpendersUserId = "2"
                         },
                         new
                         {
                             GroupSpendersUserID = 3,
                             GroupId = 2,
-                            SpendersUserId = 2
+                            SpendersUserId = "2"
                         },
                         new
                         {
                             GroupSpendersUserID = 4,
                             GroupId = 2,
-                            SpendersUserId = 3
+                            SpendersUserId = "3"
                         },
                         new
                         {
                             GroupSpendersUserID = 5,
                             GroupId = 3,
-                            SpendersUserId = 1
+                            SpendersUserId = "1"
                         },
                         new
                         {
                             GroupSpendersUserID = 6,
                             GroupId = 3,
-                            SpendersUserId = 2
+                            SpendersUserId = "2"
                         },
                         new
                         {
                             GroupSpendersUserID = 7,
                             GroupId = 3,
-                            SpendersUserId = 3
+                            SpendersUserId = "3"
                         });
                 });
 
@@ -466,7 +477,7 @@ namespace Spenders.Migrations
 
                     b.HasOne("Spenders.Areas.Identity.Data.SpendersUser", "SpendersUser")
                         .WithMany("GroupSpendersUsers")
-                        .HasForeignKey("SpendersUserId1");
+                        .HasForeignKey("SpendersUserId");
                 });
 #pragma warning restore 612, 618
         }

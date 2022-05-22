@@ -15,7 +15,7 @@ namespace Spenders.Models
             _spendersContext = spendersContext;
         }
 
-        public IEnumerable<Expense> GetAllExpensesbyGroupId(int groupId)
+        public IEnumerable<Expense> GetAllExpensesByGroupId(int groupId)
         {
         
             return _spendersContext.Expenses.Where(e => e.GroupId == groupId);

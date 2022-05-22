@@ -4,8 +4,6 @@
 
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-
-        Modal content
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">New group</h4>
@@ -13,28 +11,30 @@
             </div>
             <div class="modal-body">
                 <form asp-action="CreateGroup" role="form" method="post">
+                    <h4>Candy order</h4>
 
-                    <div asp-validation-summary="All">
-                        <div class="form-group">
-                            <label asp-for="Group.Name"></label>
-                            <div>
-                                <input asp-for="Group.Name" class="form-control" />
-                                <span asp-validation-for="Group.Name" class="bg-danger"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Group.Description"></label>
-                            <div>
-                                <input asp-for="Group.Description" class="form-control" />
-                                <span asp-validation-for="Group.Description" class="bg-danger"></span>
-                            </div>
+                    <div asp-validation-summary="All"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Group.Name" class="col-md-2"></label>
+                        <div class="col-md-5">
+                            <input asp-for="Group.Name" class="form-control" />
+                            <span asp-validation-for="Group.Name"></span>
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label asp-for="Group.Description" class="col-md-2"></label>
+                        <div class="col-md-5">
+                            <input asp-for="Group.Description" class="form-control" />
+                            <span asp-validation-for="Group.Description"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            <input type="submit" class="btn btn-primary" value="Complete Order" />
+                        </div>
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
 

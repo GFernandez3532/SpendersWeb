@@ -1,0 +1,74 @@
+﻿@model Spenders.ViewModels.GroupAndExpensesDetailViewModel
+        <div class="container-fluid">
+            <div>
+                <h1 class="border-dark" align="center">@Model.Group.Name</h1> 
+            </div>
+            <div>
+                <p class="font-italic">@Model.Group.Description</p>
+            </div>
+            <hr>
+        </div>
+    <div class="container-fluid align-content-center">
+        <h3 align="center"> Group members</h3>
+        <table class="table table-info col-6" align="center">
+            <thead>
+            <tr>
+                <th scope="col">Members</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var member in @Model.Group.GroupSpendersUsers)
+            {
+                <tr>
+                    <td>@member.SpendersUser.FirstName @member.SpendersUser.LastName</td>
+                    <td><a asp-controller="Group" asp-action="RemoveUserFromGroup" asp-route-groupId="@member.GroupId" asp-route-userId="@member.GroupSpendersUserID">Remove</a></td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
+        <div class="container col-6" align="center">
+            <form asp-controller="Group" asp-action="AddUserToGroup" asp-route-groupId="@Model.Group.GroupId">
+                <label class="small">Add new member: </label>
+                <input class="form-control small" type="text" name="userEmail" />
+                <span asp-validation-for="@Model.SpendersUser.Email" class="alert-danger"></span>
+                <br />
+                <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
+            </form>
+            <hr />
+        </div>
+        <br />
+    </div>
+<hr/>
+        <div class="container-fluid align-content-center">
+            <h3 align="center">Expenses</h3>
+            <table class="table table-info border-dark col-6" align="center">
+                <thead>
+                    <tr>
+                        <th scope="col">Expenses</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expense in @Model.Expenses)
+                    {
+                        <tr>
+                            <td>@expense.Name</td>
+                            <td><a asp-controller="Expense" asp-action="RemoveExpenseFromGroup" asp-route-groupId="@Model.Group.GroupId" asp-route-expenseId="@expense.ExpenseId">Remove</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="container-fluid col-6" align="center">
+                <form asp-controller="Expense" asp-action="AddExpense" asp-route-groupId="@Model.Group.GroupId">
+                    <label class="small">Add new expense: </label>
+                    <input class="form-control" type="text" name="expenseName" />
+                    <span asp-validation-for="@Model.Expense" class="alert-danger"></span>
+                    <br />
+                    <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
+                </form>
+            </div>
+        </div>
+
+

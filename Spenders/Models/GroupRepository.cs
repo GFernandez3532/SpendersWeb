@@ -26,12 +26,28 @@ namespace Spenders.Models
        
         public Group GetGroupByGroupId(int groupId)
         {
-            return _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId);
+            return _spendersContext.Group.Include(g => g.GroupSpendersUsers).
+                ThenInclude(gsu => gsu.SpendersUser).FirstOrDefault(g => g.GroupId == groupId);
         }
 
-        public IEnumerable<Group> GetGroupsByUserId(int userId)
+        public IEnumerable<Group> GetGroupsByUserId(string userId)
         {
-            throw new NotImplementedException();
+            return _spendersContext.Group.
+                Include(g => g.GroupSpendersUsers).
+                ThenInclude(g => g.SpendersUser).
+                Where(g => g.GroupSpendersUsers.Any(gsu => gsu.SpendersUserId == userId));
+
+        }
+
+        public Group GetGroupByName(string name)
+        {
+            return _spendersContext.Group.FirstOrDefault(g => g.Name == name);
+        }
+
+        public void CreateGroup(Group group)
+        {
+            _spendersContext.Group.Add(group);
+            _spendersContext.SaveChanges();
         }
     }
 }

@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace Spenders.Models
 {
-    interface IExpenseRepository
+    public interface IExpenseRepository
     {
 
-        IEnumerable<Expense> GetAllExpensesbyGroupId(int groupId);
+        IEnumerable<Expense> GetAllExpensesByGroupId(int groupId);
 
         public Expense GetExpenseByExpenseId(int expenseId);
+
     }
 }
