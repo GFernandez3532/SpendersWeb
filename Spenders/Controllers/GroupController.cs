@@ -59,9 +59,15 @@ namespace Spenders.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateGroup(Group group)
+        public IActionResult CreateGroup(string groupName, string groupDescription)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var group = new Group
+            {
+                Name = groupName,
+                Description = groupDescription
+            };
 
             if (ModelState.IsValid)
             {
@@ -73,10 +79,12 @@ namespace Spenders.Controllers
             newGroupSpendersUser.GroupId = _groupRepository.GetGroupByName(group.Name).GroupId;
 
             newGroupSpendersUser.SpendersUserId = currentUserId;
-            
-            _groupSpendersUserRepository.CreateGroupSpendersUser(newGroupSpendersUser);
 
-            return RedirectToAction("List");
+            _groupSpendersUserRepository.CreateGroupSpendersUser(newGroupSpendersUser);
+            
+            _spendersContext.SaveChanges();
+
+            return RedirectToAction("Details", new { newGroupSpendersUser.GroupId });
         }
 
         public IActionResult Details(int groupId)
@@ -113,6 +121,7 @@ namespace Spenders.Controllers
         [HttpPost]
         public IActionResult AddUserToGroup(int groupId, string userEmail)
         {
+            string ErrMessage;
 
             var newUserToGroup = _spendersContext.SpendersUser.FirstOrDefault(u => u.Email == userEmail);
 
@@ -131,17 +140,29 @@ namespace Spenders.Controllers
                     };
 
                     _spendersContext.GroupSpendersUser.Add(newGroupSpendersUser);
-
+                    TempData["SuccessMessage"] = newUserToGroup.FirstName +" Added Successfully";
                     _spendersContext.SaveChanges();
+                }
+                else
+                {
+                    ErrMessage = "User is already part of this group";
+                    TempData["ErrorMessage"] = ErrMessage;
+
+                    return RedirectToAction("Details", new { groupId });
                 }
             }
             else
             {
-               
+                ErrMessage = "User not Found";
+
+                TempData["ErrorMessage"] = ErrMessage;
+
+                return RedirectToAction("Details", new { groupId });
             }
 
             return RedirectToAction("Details" ,new {groupId});
 
         }
+
     }
 }

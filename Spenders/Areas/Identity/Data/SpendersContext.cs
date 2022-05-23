@@ -21,6 +21,7 @@ namespace Spenders.Data
         public DbSet<GroupSpendersUser> GroupSpendersUser { get; set; }
         public DbSet<SpendersUser> SpendersUser { get; set; }
         public DbSet<Expense> Expenses{ get; set; }
+        public DbSet<GeneralLedger> GeneralLedgers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

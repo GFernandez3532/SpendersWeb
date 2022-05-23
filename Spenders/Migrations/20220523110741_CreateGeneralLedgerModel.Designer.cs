@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spenders.Data;
 
 namespace Spenders.Migrations
 {
     [DbContext(typeof(SpendersContext))]
-    partial class SpendersContextModelSnapshot : ModelSnapshot
+    [Migration("20220523110741_CreateGeneralLedgerModel")]
+    partial class CreateGeneralLedgerModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

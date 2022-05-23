@@ -36,6 +36,7 @@ namespace Spenders
             services.AddScoped<ISpendersUserRepository, SpendersUserRepository>();
             services.AddScoped<IGroupSpendersUserRepository, GroupSpendersUserRepository>();
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            services.AddScoped<IGeneralLedgerRepository, GeneralLedgerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

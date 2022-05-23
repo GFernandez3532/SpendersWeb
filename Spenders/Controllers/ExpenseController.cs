@@ -35,6 +35,8 @@ namespace Spenders.Controllers
 
         public IActionResult AddExpense(string expenseName, int groupId)
         {
+            string ErrMessage = "Expense already exists in current group";
+            string SuccessMessage = "Expense added succesfully";
             if (_spendersContext.Expenses.FirstOrDefault(e=> e.Name == expenseName && e.GroupId == groupId) == null)
             {
                 var expense = new Expense
@@ -47,9 +49,15 @@ namespace Spenders.Controllers
                 {
                     _spendersContext.Expenses.Add(expense);
 
+                    TempData["SuccessMessage"] = SuccessMessage;
+
                     _spendersContext.SaveChanges();
                 }
 
+            }
+            else
+            {
+                TempData["ErrorMessage"] = ErrMessage;
             }
             
             return RedirectToAction("Details", "Group", new { groupId = groupId });

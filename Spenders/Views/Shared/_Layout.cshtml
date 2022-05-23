@@ -19,7 +19,7 @@
                 <a class="navbar-brand" asp-area="" asp-controller="Group" asp-action="Index">Spenders</a>
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    @*<partial name="_NewGroupForm.cshtml" />*@
+                    <partial name="_NewGroupForm.cshtml" />
                 }
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
