@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spenders.Data;
 
 namespace Spenders.Migrations
 {
     [DbContext(typeof(SpendersContext))]
-    partial class SpendersContextModelSnapshot : ModelSnapshot
+    [Migration("20220529072800_GeneralLEdgertableModification")]
+    partial class GeneralLEdgertableModification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,44 +229,44 @@ namespace Spenders.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a1f90dc8-e2be-4d0c-9a70-eebeedfe7d74",
+                            Id = "985c2478-7fcb-429d-a5bb-7867965327cf",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6c30fbe2-1626-4684-b563-f94e40dcdf11",
+                            ConcurrencyStamp = "4b19e723-2f5e-4ef2-9105-2ac61120f5c7",
                             Email = "Gonza@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Gonzalo",
                             LastName = "Fernandez",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4ddc4aa7-0b7b-41a8-9b32-323c1f53e84c",
+                            SecurityStamp = "8f9491ac-c4a3-4723-b1a6-e1e51ac88783",
                             TwoFactorEnabled = false
                         },
                         new
                         {
-                            Id = "660d472e-679f-422d-aded-13155da4034c",
+                            Id = "f9799118-5f16-419b-b82d-487355ff2594",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e6c59625-0f82-4bee-bac1-4f9599fc7a6c",
+                            ConcurrencyStamp = "cf9cb6b5-9efc-45ff-a2b7-d47b302ad1ee",
                             Email = "Ashley@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ashley",
                             LastName = "Hague",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "67bb9546-75b8-43c7-8725-b1b4e0411ff8",
+                            SecurityStamp = "79596c7f-fd5e-4a41-9bc1-0d0d01d272f8",
                             TwoFactorEnabled = false
                         },
                         new
                         {
-                            Id = "773316dc-f71f-44a1-b876-a28fdeb14d6f",
+                            Id = "130c2ae4-c908-4d96-8ad9-d19ec5329cdd",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b65f4e8d-74ee-456a-9ba6-771e3165c8c5",
+                            ConcurrencyStamp = "c673454c-c2c2-46b4-96df-363a4a879db2",
                             Email = "Eduardo@Gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Eduardo",
                             LastName = "Simonson",
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "023c5d46-cfc3-43cb-8c38-5e0fb1584091",
+                            SecurityStamp = "c7e1a55d-4c9e-434f-80a1-e11759486528",
                             TwoFactorEnabled = false
                         });
                 });

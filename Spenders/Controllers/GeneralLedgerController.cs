@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Spenders.Areas.Identity.Data;
 using Spenders.Data;
 using Spenders.Models;
+using Spenders.ViewModels;
 
 namespace Spenders.Controllers
 {
@@ -16,64 +19,45 @@ namespace Spenders.Controllers
         private readonly IGroupSpendersUserRepository _groupSpendersUserRepository ;
         private readonly ISpendersUserRepository _spendersUserRepository;
         private readonly IGroupRepository _groupRepository;
+        private readonly IExpenseRepository _expenseRepository;
 
         public GeneralLedgerController(SpendersContext spendersContext, IGeneralLedgerRepository generalLedgerRepository,
-        IGroupSpendersUserRepository groupSpendersUserRepository, ISpendersUserRepository spendersUserRepository, IGroupRepository groupRepository)
+        IGroupSpendersUserRepository groupSpendersUserRepository, ISpendersUserRepository spendersUserRepository, IGroupRepository groupRepository,
+        IExpenseRepository expenseRepository)
         {
             _spendersContext = spendersContext;
             _generalLedgerRepository = generalLedgerRepository;
             _groupSpendersUserRepository = groupSpendersUserRepository;
             _spendersUserRepository = spendersUserRepository;
             _groupRepository = groupRepository;
+            _expenseRepository = expenseRepository;
         }
 
 
         // GET: GeneralLedgerController
         public IActionResult Index(int groupId)
         {
-            var group = _groupRepository.GetGroupByGroupId(groupId);
+            IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
+            IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
 
-            return View(group);
+            IEnumerable<GeneralLedger> generalLEntries =
+                _generalLedgerRepository.GetGeneralLedgerEntriesByGroupAndDate(groupId, DateTime.Now);
+
+            var generalLedgerEntriesViewModel = new CreateGeneralLedgerEntriesViewModel
+            {
+                Expenses = expensesForTheGroup,
+                GroupSpendersUsers = groupUsers,
+                GroupId = groupId,
+                GeneralLedgerEntries = generalLEntries
+            };
+
+            return View(generalLedgerEntriesViewModel);
         }
 
-        // GET: GeneralLedgerController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: GeneralLedgerController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: GeneralLedgerController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: GeneralLedgerController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
-        }
-
-        // POST: GeneralLedgerController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
             try
             {
                 return RedirectToAction(nameof(Index));
@@ -84,25 +68,50 @@ namespace Spenders.Controllers
             }
         }
 
-        // GET: GeneralLedgerController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int generalLedgerId, int groupId)
         {
-            return View();
+            var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
+
+            if (generalLedgerEntry != null)
+            {
+                _spendersContext.GeneralLedgers.Remove(generalLedgerEntry);
+            }
+
+            _spendersContext.SaveChanges();
+
+            return RedirectToAction("Index", new { groupId });
         }
 
-        // POST: GeneralLedgerController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult CreateGeneralLedgerEntry(GeneralLedger generalLedger, int groupId)
         {
-            try
+            generalLedger.GroupSpendersUser = _groupSpendersUserRepository.GetGroupSpendersUserById(generalLedger.GroupSpendersUserId);
+
+            //var groupId = generalLedger.GroupSpendersUser.GroupId;
+            
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                generalLedger.ExpenseDate = generalLedger.ExpenseDate.Date;
+
+                generalLedger.DateEntered = DateTime.Now;
+
+                _generalLedgerRepository.CreateGeneralLedger(generalLedger);
+                
+                string defaultDatePickerValue = generalLedger.ExpenseDate.ToString("MM/dd/yyyy");
+
+                TempData["DefaultDatePickerValue"] = defaultDatePickerValue;
+
             }
-            catch
+            else
             {
-                return View();
+                string ErrMessage = "Something went wrong. Please try again";
+                TempData["ErrorMessage"] = ErrMessage;
+
+                return RedirectToAction("Index", new { groupId });
             }
+
+            return RedirectToAction("Index", new { groupId });
         }
     }
 }

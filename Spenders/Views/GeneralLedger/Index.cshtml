@@ -1,6 +1,159 @@
-﻿@model Spenders.Models.Group
+﻿@model Spenders.ViewModels.CreateGeneralLedgerEntriesViewModel
+<div class="row justify-content-between">
+    <div class="container">
+        <div align="center">
+            <div class="col-md-6 " style="background-color: darkgray;">
+                <div asp-validation-summary="All"></div>
+                <form name="GeneralLedgerForm" asp-action="CreateGeneralLedgerEntry" asp-route-groupId="@Model.GroupId" role="form" method="post">
+                    <br />
+                    <div id="datepicker"></div>
+                    <input id="datePickerInput" name="ExpenseDate" type="hidden" />
+                    <br />
+                    <div>
 
-<div>
-    <h3> New entries</h3>
+                        <div class="form-group col-8">
+                            <label asp-for="NewGeneralLedger.GroupSpendersUserId">Select a Spenders user:</label>
+                            <select class="form-control" id="userName" name="GroupSpendersUserID">
+                                <option value="" disabled selected>Spenders User</option>
+                                @foreach (var groupSpendersUser in @Model.GroupSpendersUsers)
+                                {
+                                    <option value="@groupSpendersUser.GroupSpendersUserID">@groupSpendersUser.SpendersUser.FirstName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="NewGeneralLedger.GroupSpendersUserId"></span>
+                        </div>
 
+                        <div class="form-group col-8">
+                            <label asp-for="NewGeneralLedger.ExpenseId">Select an expense:</label>
+                            <select class="form-control" id="expenseName" name="ExpenseId">
+                                <option value="" disabled selected>Expenses</option>
+                                @foreach (var expense in @Model.Expenses)
+                                {
+                                    <option value="@expense.ExpenseId">@expense.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="NewGeneralLedger.ExpenseId"></span>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <label asp-for="NewGeneralLedger.Amount">Amount: </label>
+                            <input min="0" class="form-control" id="Amount" name="Amount" type="number" />
+                            <span asp-validation-for="NewGeneralLedger.Amount"></span>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <button class="btn btn-success " name="submit" type="submit">
+                                Add Entry
+                            </button>
+                        </div>
+                        <br />
+                    </div>
+                </form>
+            </div>
+            <table class="table table-bordered small col-8" ;>
+                <thead>
+                    <tr>
+                        <th scope="col">Spender</th>
+                        <th scope="col">Expense</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var generalLedgerEntries in @Model.GeneralLedgerEntries)
+                    {
+                        <tr>
+                            <td>@generalLedgerEntries.GroupSpendersUser.SpendersUser.FirstName</td>
+                            <td>@generalLedgerEntries.Expense.Name</td>
+                            <td>@generalLedgerEntries.Amount</td>
+                            <td>@generalLedgerEntries.ExpenseDate.ToShortDateString()</td>
+                            <td>
+                                <a class="btn small btn-danger" asp-controller="GeneralLedger" asp-action="Delete" asp-route-groupId="@Model.GroupId" asp-route-generalLedgerId="@generalLedgerEntries.GeneralLedgerId">Remove</a>
+                                <a class="btn small btn-info" asp-controller="GeneralLedger" asp-action="Edit" asp-route-groupId="@Model.GroupId" asp-route-generalLedgerId="@generalLedgerEntries.GeneralLedgerId">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<!-- Error dialog Start-->
+<div id="myModalError" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Information</h2>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div id="MyModalErrorAlertBody" class="modal-body alert-danger">
+                this is a modal body. Our message will appear here
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Error dialog End-->
+
+
+@section Scripts
+{
+    @*<script src="https://code.jquery.com/jquery-3.6.0.js"></script>*@
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function() {
+
+            var msgErr = "@TempData["ErrorMessage"]";
+
+            if (msgErr)
+                openErrorModal(msgErr);
+        });
+
+        function openErrorModal(strMessage) {
+
+            var myDiv = document.getElementById("MyModalErrorAlertBody");
+            myDiv.innerHTML = strMessage;
+
+            $('#myModalError').modal('show');
+        }
+
+        var dateAsObject;
+        var dateAsString;
+        var formattedDate;
+
+        $(function () {
+            $("#datepicker").datepicker({
+                defaultDate: "@TempData["DefaultDatePickerValue"]",
+                onSelect: function (dateText, inst) {
+
+                    var dateAsString = dateText; //the first parameter of this function
+
+                    dateAsObject = $(this).datepicker('getDate'); //the getDate method
+
+                    formattedDate = dateAsObject.getDate() + "/" + (dateAsObject.getMonth() + 1) + "/" + dateAsObject.getFullYear();
+
+                    document.getElementById("datePickerInput").value = formattedDate;
+
+                }
+
+
+            });
+
+        });
+
+
+    </script>
+}
+

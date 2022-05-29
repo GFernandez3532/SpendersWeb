@@ -7,7 +7,13 @@ namespace Spenders.Models
 {
     public interface IGeneralLedgerRepository
     {
-        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesByGroupSpendersUser(int groupSpendersUserId);
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesByGroupSpendersUser(string userId);
+
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesByGroupAndDate(int group, DateTime date);
+
+        public GeneralLedger GetGeneralLedgerByGeneralLedgerId(int generalLedgerId);
+
+        public void CreateGeneralLedger(GeneralLedger generalLedger);
 
 
     }

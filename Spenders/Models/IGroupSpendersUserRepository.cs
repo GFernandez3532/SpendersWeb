@@ -12,5 +12,7 @@ namespace Spenders.Models
 
         public GroupSpendersUser GetGroupSpendersUserById(int groupSpendersUserId);
 
+        public IEnumerable<GroupSpendersUser> GetGroupSpendersUserByGroupId(int groupId);
+
     }
 }
