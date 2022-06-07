@@ -5,6 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Spenders.Areas.Identity.Data;
 using Spenders.Data;
 using Spenders.Models;
@@ -17,25 +20,27 @@ namespace Spenders.Controllers
         private readonly SpendersContext _spendersContext;
         private readonly IGeneralLedgerRepository _generalLedgerRepository;
         private readonly IGroupSpendersUserRepository _groupSpendersUserRepository ;
-        private readonly ISpendersUserRepository _spendersUserRepository;
-        private readonly IGroupRepository _groupRepository;
         private readonly IExpenseRepository _expenseRepository;
 
         public GeneralLedgerController(SpendersContext spendersContext, IGeneralLedgerRepository generalLedgerRepository,
-        IGroupSpendersUserRepository groupSpendersUserRepository, ISpendersUserRepository spendersUserRepository, IGroupRepository groupRepository,
-        IExpenseRepository expenseRepository)
+        IGroupSpendersUserRepository groupSpendersUserRepository, IExpenseRepository expenseRepository)
         {
             _spendersContext = spendersContext;
             _generalLedgerRepository = generalLedgerRepository;
             _groupSpendersUserRepository = groupSpendersUserRepository;
-            _spendersUserRepository = spendersUserRepository;
-            _groupRepository = groupRepository;
             _expenseRepository = expenseRepository;
         }
 
 
         // GET: GeneralLedgerController
         public IActionResult Index(int groupId)
+        {
+            var generalLedgerEntriesViewModel = CreateGeneralLedgerEntriesViewModel(groupId);
+
+            return View(generalLedgerEntriesViewModel);
+        }
+
+        private CreateGeneralLedgerEntriesViewModel CreateGeneralLedgerEntriesViewModel(int groupId)
         {
             IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
             IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
@@ -51,7 +56,7 @@ namespace Spenders.Controllers
                 GeneralLedgerEntries = generalLEntries
             };
 
-            return View(generalLedgerEntriesViewModel);
+            return generalLedgerEntriesViewModel;
         }
 
         [HttpPost]
@@ -86,12 +91,10 @@ namespace Spenders.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateGeneralLedgerEntry(GeneralLedger generalLedger, int groupId)
         {
-            generalLedger.GroupSpendersUser = _groupSpendersUserRepository.GetGroupSpendersUserById(generalLedger.GroupSpendersUserId);
-
-            //var groupId = generalLedger.GroupSpendersUser.GroupId;
-            
             if (ModelState.IsValid)
             {
+                generalLedger.GroupSpendersUser = _groupSpendersUserRepository.GetGroupSpendersUserById(generalLedger.GroupSpendersUserId);
+                
                 generalLedger.ExpenseDate = generalLedger.ExpenseDate.Date;
 
                 generalLedger.DateEntered = DateTime.Now;
@@ -108,10 +111,210 @@ namespace Spenders.Controllers
                 string ErrMessage = "Something went wrong. Please try again";
                 TempData["ErrorMessage"] = ErrMessage;
 
-                return RedirectToAction("Index", new { groupId });
+                var generalLedgerEntriesViewModel = CreateGeneralLedgerEntriesViewModel(groupId);
+
+                return View("Index",generalLedgerEntriesViewModel);
             }
 
             return RedirectToAction("Index", new { groupId });
+        }
+
+        public IActionResult ReportsIndex(int groupId)
+        {
+            List<SelectListItem> months = new List<SelectListItem>();
+            List<SelectListItem> years = new List<SelectListItem>();
+
+            PopulateMonths(months);
+            PopulateYears(years);
+
+            ReportViewModel reportViewModel = new ReportViewModel
+            {
+                GroupId = groupId,
+                GroupName = _spendersContext.Group.FirstOrDefault(g =>g.GroupId == groupId)?.Name,
+                Months = months,
+                Years = years
+            };
+
+            return View("Reports", reportViewModel);
+        }
+
+
+
+        public IActionResult ReportMonthlyProcess(int groupId, int selectedMonth, int selectedYear)
+        {
+
+            List<SelectListItem> months = new List<SelectListItem>();
+            List<SelectListItem> years = new List<SelectListItem>();
+            List<Tuple<string, decimal>> listUsersOwing = new List<Tuple<string, decimal>>();
+            List<Tuple<string, decimal, decimal>> listExpensesStats = new List<Tuple<string, decimal, decimal>>();
+
+            PopulateMonths(months);
+            PopulateYears(years);
+
+            ReportViewModel reportViewModel = new ReportViewModel
+            {
+                GroupId = groupId,
+                GroupName = _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId)?.Name,
+                Months = months,
+                Years = years
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View("Reports", reportViewModel);
+
+            }
+
+            IEnumerable<GeneralLedger> allGlEntries =
+                _generalLedgerRepository.GetGeneralLedgerEntriesPerGroupAndMonthYear(groupId, selectedMonth,
+                    selectedYear);
+
+            IEnumerable<IGrouping<string, decimal>> totalUsers = allGlEntries.GroupBy(
+                gl => gl.GroupSpendersUser.SpendersUser.FirstName + " " + gl.GroupSpendersUser.SpendersUser.LastName, gl => gl.Amount );
+
+            IEnumerable<IGrouping<string, decimal>> totalExpenses = _generalLedgerRepository.GetGeneralLedgerEntriesPerGroupAndMonthYear(groupId, selectedMonth,
+                selectedYear).GroupBy(gl => gl.Expense.Name, gl => gl.Amount);
+
+            var averageAmountPerUser = CalculateAverageAmountPerUser(groupId, selectedMonth, selectedYear, totalUsers);
+
+            foreach (var user in totalUsers)
+            {
+                string userName = user.Key;
+
+                decimal amountOwed = Math.Round(averageAmountPerUser - user.Sum(), 2);
+
+                listUsersOwing.Add(new Tuple<string, decimal>(userName,amountOwed));
+            }
+
+            foreach (var expense in totalExpenses)
+            {
+                string expenseName = expense.Key;
+
+                decimal comparisonPreviousMonth = 0;
+                decimal expenseAmountSpent =  expense.Sum();
+
+                decimal expenseOnPreviousMonth =
+                    _generalLedgerRepository.GetTotalAmountSpentPerExpensePerPeriodGroupAndMonthYear(groupId,
+                        expense.Key, selectedMonth -1,  selectedYear);
+
+                if (expenseOnPreviousMonth != 0)
+                {
+                    comparisonPreviousMonth = Math.Round(((expenseAmountSpent * 100) / expenseOnPreviousMonth) - 100);
+                }
+
+                listExpensesStats.Add(new Tuple<string, decimal, decimal>(expenseName, expenseAmountSpent, comparisonPreviousMonth));
+            }
+            reportViewModel = new ReportViewModel
+            {
+                GroupId = groupId,
+                GroupName = _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId)?.Name,
+                Months = months,
+                Years = years,
+                SpendersUsersOwing = listUsersOwing,
+                ListExpensesStats = listExpensesStats,
+                SpendersUsersTotalAmounts = totalUsers,
+                ExpensesFinalAmount = totalExpenses,
+                AllGeneralLedgerEntries = allGlEntries
+            };
+
+
+            return View("Reports", reportViewModel);
+        }
+
+        public IActionResult ReportCustomProcess(int groupId, DateTime dateFrom, DateTime dateTo)
+        {
+            List<SelectListItem> months = new List<SelectListItem>();
+            List<SelectListItem> years = new List<SelectListItem>();
+
+            List<Tuple<string, decimal>> listUsersOwing = new List<Tuple<string, decimal>>();
+
+            IEnumerable<GeneralLedger> allGlEntries =
+                _generalLedgerRepository.GetGeneralLedgerEntriesPerGroupAndCustomDates(groupId, dateFrom,
+                    dateTo);
+
+            IEnumerable<IGrouping<string, decimal>> totalUsers = allGlEntries.GroupBy(
+                gl => gl.GroupSpendersUser.SpendersUser.FirstName + " " + gl.GroupSpendersUser.SpendersUser.LastName, gl => gl.Amount);
+
+            IEnumerable<IGrouping<string, decimal>> totalExpenses = allGlEntries.GroupBy(gl => gl.Expense.Name, gl => gl.Amount);
+
+            var averageAmountPerUser = CalculateAverageAmountPerUser(groupId, dateFrom, dateTo, totalUsers);
+
+            PopulateMonths(months);
+            PopulateYears(years);
+
+
+            foreach (var user in totalUsers)
+            {
+
+                string userName = user.Key;
+
+                decimal amountOwed = Math.Round(averageAmountPerUser - user.Sum(), 2);
+
+
+                listUsersOwing.Add(new Tuple<string, decimal>(userName, amountOwed));
+
+            }
+
+            ReportViewModel reportViewModel = new ReportViewModel
+            {
+                GroupId = groupId,
+                GroupName = _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId)?.Name,
+                Months = months,
+                Years = years,
+                SpendersUsersOwing = listUsersOwing,
+                SpendersUsersTotalAmounts = totalUsers,
+                ExpensesFinalAmount = totalExpenses,
+                AllGeneralLedgerEntries = allGlEntries
+            };
+
+
+            return View("Reports", reportViewModel);
+        }
+        private decimal CalculateAverageAmountPerUser(int groupId, int selectedMonth, int selectedYear, IEnumerable<IGrouping<string, decimal>> totalUsers)
+        {
+            decimal totalAmountSpentInPeriod =
+                _generalLedgerRepository.GetTotalAmountSpentPeriodGroupAndMonthYear(groupId, selectedMonth, selectedYear);
+
+            int totalAmountOfSpenders = totalUsers.Count();
+
+            decimal averageAmountPerUser = totalAmountSpentInPeriod / totalAmountOfSpenders;
+            return averageAmountPerUser;
+        }
+
+        private decimal CalculateAverageAmountPerUser(int groupId, DateTime dateTo, DateTime dateFrom, IEnumerable<IGrouping<string, decimal>> totalUsers)
+        {
+            decimal totalAmountSpentInPeriod =
+                _generalLedgerRepository.GetTotalAmountSpentPeriodGroupAndCustomDate(groupId, dateTo, dateFrom);
+
+            int totalAmountOfSpenders = totalUsers.Count();
+
+            decimal averageAmountPerUser = totalAmountSpentInPeriod / totalAmountOfSpenders;
+
+            return averageAmountPerUser;
+        }
+
+        private static void PopulateYears(List<SelectListItem> years)
+        {
+            years.Add(new SelectListItem { Text = "Select"});
+            years.Add(new SelectListItem { Text = "2022", Value = "2022" });
+            years.Add(new SelectListItem { Text = "2023", Value = "2023" });
+        }
+
+        private static void PopulateMonths(List<SelectListItem> months)
+        {
+            months.Add(new SelectListItem { Text = "Select"});
+            months.Add(new SelectListItem { Text = "January", Value = "1" });
+            months.Add(new SelectListItem { Text = "February", Value = "2" });
+            months.Add(new SelectListItem { Text = "March", Value = "3" });
+            months.Add(new SelectListItem { Text = "April", Value = "4" });
+            months.Add(new SelectListItem { Text = "May", Value = "5" });
+            months.Add(new SelectListItem { Text = "June", Value = "6" });
+            months.Add(new SelectListItem { Text = "July", Value = "7" });
+            months.Add(new SelectListItem { Text = "August", Value = "8" });
+            months.Add(new SelectListItem { Text = "September", Value = "9" });
+            months.Add(new SelectListItem { Text = "October", Value = "10" });
+            months.Add(new SelectListItem { Text = "November", Value = "11" });
+            months.Add(new SelectListItem { Text = "December", Value = "12" });
         }
     }
 }

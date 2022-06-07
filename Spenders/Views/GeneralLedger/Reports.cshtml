@@ -1,0 +1,252 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Spenders.ViewModels.ReportViewModel
+<head>
+    <link href="~/css/site.css" rel="stylesheet" />
+
+</head>
+<div align="center" style="background: beige;  border-style:outset">
+    <header>
+        <h3 align="center">Reports for @Model.GroupName</h3>
+        <br />
+        <div>
+            <div class="container">
+                <div class="row">
+                    <div class="form-check col-sm-2">
+                        <input class="form-check-input" type="radio" name="ReportType" value="1" checked="checked">
+                        <label class="form-check-label">
+                            Monthly report
+                        </label>
+                    </div>
+                    <div class="form-check col-sm-2">
+                        <input class="form-check-input" type="radio" name="ReportType" value="2">
+                        <label class="form-check-label">
+                            Custom date report
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div asp-validation-summary="All" class="text-danger" align="left"></div>
+            <br />
+            <div class="container-sm" id="ReportType1">
+
+                <form asp-controller="GeneralLedger" asp-action="ReportMonthlyProcess" method="post" asp-route-groupId="@Model.GroupId">
+                    <div class="row">
+                        <div class="form-group col-4">
+                            <label asp-for="SelectedMonth">Select a Month:</label>
+                            <select class="form-control col-sm-4" asp-items="@Model.Months" id="SelectedMonth" name="SelectedMonth"></select>
+                        </div>
+                        <div class="form-group col-4">
+                            <label>Select a Year:</label>
+                            <select asp-items="@Model.Years" class="form-control col-sm-4" id="SelectedYear" name="SelectedYear"></select>
+
+                        </div>
+                        <br />
+                    </div>
+                    <div align="center">
+                        <button class="btn btn-success " name="submit" type="submit">Run Report</button>
+                    </div>
+                </form>
+            </div>
+            <div class="container-sm" id="ReportType2">
+                <form asp-action="ReportCustomProcess" asp-route-groupId="@Model.GroupId">
+
+                    <div>
+                        <div class="row">
+                            <div class="form-check col-sm-4">
+                                <label>Select a date:</label>
+                                <input class="form-control col-6" placeholder="Date To" type="text" id="datepickerFrom" name="dateFrom">
+                            </div>
+                            <div class="form-check col-sm-4">
+                                <label>Select a date:</label>
+                                <input class="form-control col-6" placeholder="Date From" type="text" id="datepickerTo" name="dateTo">
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div align="center">
+                        <button class="btn btn-success " name="submit" type="submit">Run Report</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </header>
+</div>
+<body >
+
+<div style="background: beige">
+    <div class="container-fluid col-6" align="center">
+        @if (@Model.SpendersUsersOwing != null)
+        {
+            <hr style="border: 2px solid aqua">
+            <ul class="list-group list-group-flush">
+                @foreach (var user in @Model.SpendersUsersOwing)
+                {
+                    if (user.Item2 > 0)
+                    {
+                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> owes <span style="color: red; font-weight: bold">$@user.Item2</span> </li>
+
+                    }
+                    else if (user.Item2 < 0)
+                    {
+                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> is owed <span style="color: green; font-weight: bold">$@Math.Abs(@user.Item2)</span> </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> does not owe anything </li>
+                    }
+
+                }
+
+            </ul>
+
+        }
+    </div>
+    <hr>
+    <br/>
+    @if (@Model.ListExpensesStats != null)
+    {
+        <hr style="border: 2px solid aqua">
+        <div class="container-fluid col-8" align="left">
+            <ul class="list-group list-group-flush">
+                @foreach (var expense in @Model.ListExpensesStats)
+                {
+                    if (@expense.Item3 > 0)
+                    {
+                        <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">less</span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. A decrease of <span style="color: green; font-weight: bold">@expense.Item3%</span> </li>
+                    }
+                    else if (@expense.Item3 < 0)
+                    {
+                        <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">more </span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. An increase of <span style="color: red; font-weight: bold">@expense.Item3%</span> </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item">The group spent the same on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month compared to last month </li>
+                    }
+                }
+
+            </ul>
+        </div>
+    }
+    <br/>
+    <div class="container-fluid" align="center">
+        <div class="row justify-content-between">
+            @if (Model.SpendersUsersTotalAmounts != null)
+            {
+                <table class="table table-hover small col-4" style="background: white" ;>
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Spender</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in @Model.SpendersUsersTotalAmounts)
+                    {
+                        <tr>
+                            <td>@user.Key</td>
+                            <td>@user.Sum()</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+            <br/>
+            @if (Model.ExpensesFinalAmount != null)
+            {
+                <table class="table table-hover small col-4" style="background: white";>
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Expenses</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var expense in @Model.ExpensesFinalAmount)
+                    {
+                        <tr>
+                            <td>@expense.Key</td>
+                            <td>@expense.Sum()</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+    <br/>
+    @if (Model.SpendersUsersTotalAmounts != null)
+    {
+        <div align="center">
+            <hr style="border: 2px solid aqua">
+            <table class="table table-hover small col-10" style="background: white">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Spender</th>
+                    <th scope="col">Expense</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var generalLedgerEntries in @Model.AllGeneralLedgerEntries)
+                {
+                    <tr>
+                        <td>@generalLedgerEntries.GroupSpendersUser.SpendersUser.FirstName</td>
+                        <td>@generalLedgerEntries.Expense.Name</td>
+                        <td>@generalLedgerEntries.Amount</td>
+                        <td>@generalLedgerEntries.ExpenseDate.ToShortDateString()</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+</body>
+
+
+
+
+
+
+@section Scripts
+{
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("div.container-sm").hide();
+
+            $("#ReportType1").show();
+
+            $('input[type="radio"]').click(function () {
+
+                var inputValue = $(this).attr("value");
+
+                $("div.container-sm").hide();
+
+                $("#ReportType" + inputValue).show();
+
+            });
+
+            $(function () {
+                $("#datepickerFrom").datepicker({
+                    dateFormat: 'dd-mm-yy'
+                }).val();
+            });
+            $(function () {
+                $("#datepickerTo").datepicker({
+                    dateFormat: 'dd-mm-yy'
+                }).val();
+            });
+        });
+
+    </script>
+
+}
+

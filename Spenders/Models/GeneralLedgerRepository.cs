@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Spenders.Areas.Identity.Data;
 using Spenders.Data;
 
 namespace Spenders.Models
@@ -37,10 +38,63 @@ namespace Spenders.Models
             return _spendersContext.GeneralLedgers.FirstOrDefault(g => g.GeneralLedgerId == generalLedgerId);
         }
 
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesPerGroupAndMonthYear(int groupId,
+            int month, int year)
+        {
+            return _spendersContext.GeneralLedgers
+                .Include(gl => gl.Expense)
+                .Include(gl => gl.GroupSpendersUser)
+                .ThenInclude(gl => gl.SpendersUser)
+                .Where(gl =>
+                    gl.GroupSpendersUser.GroupId == groupId && gl.ExpenseDate.Month == month &&
+                    gl.ExpenseDate.Year == year);
+
+
+        }
+
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesPerGroupAndCustomDates(int groupId, DateTime dateFrom, DateTime dateTo)
+        {
+            return _spendersContext.GeneralLedgers
+                .Include(gl => gl.Expense)
+                .Include(gl => gl.GroupSpendersUser)
+                .ThenInclude(gl => gl.SpendersUser)
+                .Where(gl =>
+                    gl.GroupSpendersUser.GroupId == groupId && gl.ExpenseDate >= dateFrom &&
+                    gl.ExpenseDate <= dateTo);
+        }
+
         public void CreateGeneralLedger(GeneralLedger generalLedger)
         {
             _spendersContext.GeneralLedgers.Add(generalLedger);
             _spendersContext.SaveChanges();
+        }
+
+        public decimal GetTotalAmountSpentPeriodGroupAndMonthYear(int groupId, int month, int year)
+        {
+            decimal totalAmount = _spendersContext.GeneralLedgers.Where(gl =>
+                    gl.GroupSpendersUser.GroupId == groupId && gl.ExpenseDate.Month == month &&
+                    gl.ExpenseDate.Year == year).Select(gl =>gl.Amount).Sum();
+
+            return totalAmount;
+        }
+
+        public decimal GetTotalAmountSpentPeriodGroupAndCustomDate(int groupId, DateTime dateFrom, DateTime dateTo)
+        {
+            decimal totalAmount = _spendersContext.GeneralLedgers
+                .Where(gl =>gl.GroupSpendersUser.GroupId == groupId && gl.ExpenseDate >= dateFrom && gl.ExpenseDate <= dateTo)
+                .Select(gl => gl.Amount).Sum();
+
+            return totalAmount;
+        }
+
+        public decimal GetTotalAmountSpentPerExpensePerPeriodGroupAndMonthYear(int groupId, string expenseName, int month, int year)
+        {
+            decimal totalAmount = _spendersContext.GeneralLedgers
+                .Where(gl => gl.GroupSpendersUser.GroupId == groupId && gl.Expense.Name == expenseName && gl.ExpenseDate.Month == month &&
+                             gl.ExpenseDate.Year == year)
+                .Select(gl => gl.Amount).Sum();
+
+            return totalAmount;
         }
     }
 }

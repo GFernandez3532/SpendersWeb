@@ -22,7 +22,7 @@ namespace Spenders.Models
             _spendersContext.SaveChanges();
         }
 
-        public GroupSpendersUser GetGroupSpendersUserById(int groupSpendersUserId)
+        public GroupSpendersUser GetGroupSpendersUserById(int? groupSpendersUserId)
         {
             return _spendersContext.GroupSpendersUser.FirstOrDefault(gsu => gsu.GroupSpendersUserID == groupSpendersUserId);
         }

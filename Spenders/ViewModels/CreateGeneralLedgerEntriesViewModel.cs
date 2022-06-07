@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Spenders.Areas.Identity.Data;
@@ -13,8 +14,10 @@ namespace Spenders.ViewModels
         public IEnumerable<Expense> Expenses { get; set; }
         public int GroupId { get; set; }
         public IEnumerable<GroupSpendersUser> GroupSpendersUsers { get; set; }
-
         public GeneralLedger NewGeneralLedger { get; set; }
+        
+        [Required]
+        public int userId { get; set; }
 
 
     }

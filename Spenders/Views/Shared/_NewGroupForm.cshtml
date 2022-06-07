@@ -5,29 +5,28 @@
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">New group</h4>
+            <div class="modal-header" align="center">
+                <h4 class="modal-title" align="center">Add new Group</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
                 <form asp-action="CreateGroup" role="form" method="post">
-                    <h4>New group</h4>
                     <div asp-validation-summary="All"></div>
                     <div class="form-group">
-                        <label class="col-md-2"></label>
-                        <div class="col-md-5">
-                            <input type="text" name="groupName" class="form-control" />
+                        <label class="col-md-2"> Name:</label>
+                        <div class="col-md-6">
+                            <input type="text" placeholder="add new group name.." name="groupName" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-2"></label>
-                        <div class="col-md-5">
-                            <input type="text" name="groupDescription" class="form-control" />
+                        <label class="col-md-2">Description:</label>
+                        <div class="col-md-6">
+                            <input type="text" placeholder="brief description.." name="groupDescription" class="form-control" />
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" align="center">
                         <div class="col-md-5">
-                            <input type="submit" class="btn btn-primary" value="Complete Order" />
+                            <input type="submit" class="btn btn-primary" value="Create Group" />
                         </div>
                     </div>
                 </form>

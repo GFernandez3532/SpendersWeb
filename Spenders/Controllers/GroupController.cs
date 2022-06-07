@@ -121,7 +121,7 @@ namespace Spenders.Controllers
         [HttpPost]
         public IActionResult AddUserToGroup(int groupId, string userEmail)
         {
-            string ErrMessage;
+            string errMessage;
 
             var newUserToGroup = _spendersContext.SpendersUser.FirstOrDefault(u => u.Email == userEmail);
 
@@ -145,17 +145,17 @@ namespace Spenders.Controllers
                 }
                 else
                 {
-                    ErrMessage = "User is already part of this group";
-                    TempData["ErrorMessage"] = ErrMessage;
+                    errMessage = "User is already part of this group";
+                    TempData["ErrorMessage"] = errMessage;
 
                     return RedirectToAction("Details", new { groupId });
                 }
             }
             else
             {
-                ErrMessage = "User not Found";
+                errMessage = "User not Found";
 
-                TempData["ErrorMessage"] = ErrMessage;
+                TempData["ErrorMessage"] = errMessage;
 
                 return RedirectToAction("Details", new { groupId });
             }

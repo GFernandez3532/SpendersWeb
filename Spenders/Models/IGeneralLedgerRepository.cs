@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Spenders.Areas.Identity.Data;
 
 namespace Spenders.Models
 {
@@ -13,8 +14,21 @@ namespace Spenders.Models
 
         public GeneralLedger GetGeneralLedgerByGeneralLedgerId(int generalLedgerId);
 
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesPerGroupAndMonthYear(int groupId,
+            int month, int year);
+
+        public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesPerGroupAndCustomDates(int groupId,
+            DateTime dateFrom, DateTime dateTo);
+
         public void CreateGeneralLedger(GeneralLedger generalLedger);
 
+        public decimal GetTotalAmountSpentPeriodGroupAndMonthYear(int groupId,
+            int month, int year);
+
+        public decimal GetTotalAmountSpentPeriodGroupAndCustomDate(int groupId,
+            DateTime dateFrom, DateTime dateTo);
+        public decimal GetTotalAmountSpentPerExpensePerPeriodGroupAndMonthYear(int groupId, string expenseName,
+            int month, int year);
 
     }
 }

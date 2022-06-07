@@ -1,0 +1,131 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="ReportsMenuModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel" align="center">Reports</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="form-check col-sm-6">
+                            <input class="form-check-input" type="radio" name="ReportType" value="1">
+                            <label class="form-check-label">
+                                Monthly report
+                            </label>
+                        </div>
+                        <div class="form-check col-sm-6">
+                            <input class="form-check-input" type="radio" name="ReportType" value="2">
+                            <label class="form-check-label">
+                                Custom date report
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="container-sm" style="border: groove" id="ReportType1">
+                    <div class="form-group col-8">
+                        <br />
+                        <label>Select a Month:</label>
+                        <select class="form-control" id="SelectedMonth" name="SelectedMonth">
+                            <option value="" disabled selected>Month</option>
+                            <option value="2">January</option>
+                            <option value="3">February</option>
+                            <option value="4">March</option>
+                            <option value="5">April</option>
+                            <option value="6">May</option>
+                            <option value="7">June</option>
+                            <option value="8">July</option>
+                            <option value="9">August</option>
+                            <option value="10">September</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-8">
+                        <label>Select a Year:</label>
+                        <select class="form-control" id="SelectedYear" name="SelectedYear">
+                            <option value="" disabled selected>Year</option>
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    <div align="center">
+                        <button class="btn btn-success align-content-center">Go to Report</button>
+                    </div>
+                    <br />
+                </div>
+                <div class="container-sm" style="border: groove" id="ReportType2">
+                    <div>
+                        <div class="row">
+                            <div class="form-check col-sm-6">
+                                <label>From:</label>
+                                <input type="text" id="datepicker">
+                            </div>
+                            <div class="form-check col-sm-6">
+                                <label>To:</label>
+                                <input type="text" id="datepicker1">
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div align="center">
+                        <button class="btn btn-success align-content-center">Go to Report</button>
+                    </div>
+                    <br />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts
+{
+
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("div.container-sm").hide();
+
+            $('input[type="radio"]').click(function () {
+
+                var inputValue = $(this).attr("value");
+
+                $("div.container-sm").hide();
+
+                $("#ReportType" + inputValue).show();
+
+            });
+
+            $(function () {
+                $("#datepicker").datepicker();
+            });
+            $(function () {
+                $("#datepicker1").datepicker();
+            });
+        });
+    </script>
+
+}

@@ -24,4 +24,12 @@
     <Folder Include="Pages\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\GeneralLedger\Reports.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\GeneralLedger\Reports.cshtml" />
+  </ItemGroup>
+
 </Project>

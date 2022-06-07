@@ -10,7 +10,7 @@ namespace Spenders.Models
 
         public void CreateGroupSpendersUser(GroupSpendersUser groupSpendersUser);
 
-        public GroupSpendersUser GetGroupSpendersUserById(int groupSpendersUserId);
+        public GroupSpendersUser GetGroupSpendersUserById(int? groupSpendersUserId);
 
         public IEnumerable<GroupSpendersUser> GetGroupSpendersUserByGroupId(int groupId);
 

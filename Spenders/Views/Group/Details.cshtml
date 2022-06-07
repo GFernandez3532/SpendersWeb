@@ -1,125 +1,134 @@
 ﻿@model Spenders.ViewModels.GroupAndExpensesDetailViewModel
-<div class="container-fluid">
-    <div>
-        <h1 class="border-dark" align="center">@Model.Group.Name</h1>
-    </div>
-    <div align="center">
-        <p class="font-italic">@Model.Group.Description</p>
-    </div>
-    <div class="container-fluid" align="center">
-        <div class="row col-5 justify-content-between" align="center">
-            <a class="btn btn-success" asp-controller="GeneralLedger" asp-action="Index" asp-route-groupId="@Model.Group.GroupId">Add new entries</a>
-            <button class="btn btn-danger"> Delete group</button>
-        </div>
-    </div>
-    <hr>
-</div>
-<div class="container-fluid align-content-center">
-    <h3 align="center"> Group members</h3>
-    <table class="table table-info col-6" align="center">
-        <thead>
-            <tr>
-                <th scope="col">Members</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var member in @Model.Group.GroupSpendersUsers)
-            {
-                <tr>
-                    <td>@member.SpendersUser.FirstName @member.SpendersUser.LastName</td>
-                    <td><a asp-controller="Group" asp-action="RemoveUserFromGroup" asp-route-groupId="@member.GroupId" asp-route-userId="@member.GroupSpendersUserID">Remove</a></td>
-                </tr>
-            }
 
-        </tbody>
-    </table>
-    <div class="container col-6" align="center">
-        <form asp-controller="Group" asp-action="AddUserToGroup" asp-route-groupId="@Model.Group.GroupId">
-            <label class="small">Add new member: </label>
-            <input class="form-control small" type="text" name="userEmail" />
-            <span asp-validation-for="@Model.SpendersUser.Email" class="alert-danger"> </span>
+<head>
+    <link href="~/css/site.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div style="background: beige">
+        <div class="container-fluid">
+            <div>
+                <h1 class="border-dark" align="center">@Model.Group.Name</h1>
+            </div>
+            <div align="center">
+                <p class="font-italic">@Model.Group.Description</p>
+            </div>
+            <div class="container-fluid" align="center">
+                <div class="row col-5 justify-content-between" align="center">
+                    <a class="btn btn-success" asp-controller="GeneralLedger" asp-action="Index" asp-route-groupId="@Model.Group.GroupId">Add new entries</a>
+                    <button class="btn btn-danger"> Delete group</button>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container-fluid align-content-center">
+            <h3 align="center"> Group members</h3>
+            <table class="table table-info col-6" align="center">
+                <thead>
+                    <tr>
+                        <th scope="col">Members</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var member in @Model.Group.GroupSpendersUsers)
+                    {
+                        <tr>
+                            <td>@member.SpendersUser.FirstName @member.SpendersUser.LastName</td>
+                            <td><a asp-controller="Group" asp-action="RemoveUserFromGroup" asp-route-groupId="@member.GroupId" asp-route-userId="@member.GroupSpendersUserID">Remove</a></td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <div class="container col-6" align="center">
+                <form asp-controller="Group" asp-action="AddUserToGroup" asp-route-groupId="@Model.Group.GroupId">
+                    <label class="small">Add new member: </label>
+                    <input class="form-control small col-6" type="text" name="userEmail" />
+                    <span asp-validation-for="@Model.SpendersUser.Email" class="alert-danger"> </span>
+                    <br />
+                    <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
+                </form>
+                <hr />
+            </div>
             <br />
-            <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
-        </form>
+        </div>
         <hr />
-    </div>
-    <br />
-</div>
-<hr />
-<div class="container-fluid align-content-center">
-    <h3 align="center">Expenses</h3>
-    <table class="table table-info border-dark col-6" align="center">
-        <thead>
-            <tr>
-                <th scope="col">Expenses</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var expense in @Model.Expenses)
-            {
-                <tr>
-                    <td>@expense.Name</td>
-                    <td><a asp-controller="Expense" asp-action="RemoveExpenseFromGroup" asp-route-groupId="@Model.Group.GroupId" asp-route-expenseId="@expense.ExpenseId">Remove</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="container-fluid col-6" align="center">
-        <form asp-controller="Expense" asp-action="AddExpense" asp-route-groupId="@Model.Group.GroupId">
-            <label class="small">Add new expense: </label>
-            <input class="form-control" type="text" name="expenseName" />
-            <span asp-validation-for="@Model.Expense" class="alert-danger"></span>
-            <br />
-            <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
-        </form>
-    </div>
-</div>
-
-
-
-<!-- Success dialog Start-->
-<div id="myModalSuccess" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Information</h2>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <div id="MyModalSuccessAlertBody" class="modal-body alert alert-success">
-                this is a modal body. Our message will appear here
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+        <div class="container-fluid align-content-center">
+            <h3 align="center">Expenses</h3>
+            <table class="table table-info border-dark col-6" align="center">
+                <thead>
+                    <tr>
+                        <th scope="col">Expenses</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var expense in @Model.Expenses)
+                    {
+                        <tr>
+                            <td>@expense.Name</td>
+                            <td><a asp-controller="Expense" asp-action="RemoveExpenseFromGroup" asp-route-groupId="@Model.Group.GroupId" asp-route-expenseId="@expense.ExpenseId">Remove</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="container-fluid col-6" align="center">
+                <form asp-controller="Expense" asp-action="AddExpense" asp-route-groupId="@Model.Group.GroupId">
+                    <label class="small">Add new expense: </label>
+                    <input class="form-control col-6" type="text" name="expenseName" />
+                    <span asp-validation-for="@Model.Expense" class="alert-danger"></span>
+                    <br />
+                    <input type="submit" class="btn btn-info btn-sm" value="Add to Group" />
+                </form>
+                <br/>
             </div>
         </div>
     </div>
-</div>
-<!-- Success dialog End-->
-<!-- Error dialog Start-->
-<div id="myModalError" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Information</h2>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div id="MyModalErrorAlertBody" class="modal-body alert-danger">
-                this is a modal body. Our message will appear here
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+</body>
+
+
+    <!-- Success dialog Start-->
+    <div id="myModalSuccess" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Information</h2>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div id="MyModalSuccessAlertBody" class="modal-body alert alert-success">
+                    this is a modal body. Our message will appear here
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Error dialog End-->
+    <!-- Success dialog End-->
+    <!-- Error dialog Start-->
+    <div id="myModalError" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Information</h2>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div id="MyModalErrorAlertBody" class="modal-body alert-danger">
+                    this is a modal body. Our message will appear here
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Error dialog End-->
 
-@section Scripts
+    @section Scripts
 {
-    <script type="text/javascript">
+        <script type="text/javascript">
 
         function openSuccessModal(strMessage) {
 
@@ -149,7 +158,7 @@
 
             $('#myModalError').modal('show');
         }
-    </script>
+        </script>
 
 
-}
+    }
