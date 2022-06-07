@@ -2,6 +2,7 @@
 using Spenders.Models;
 using Spenders.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -164,5 +165,39 @@ namespace Spenders.Controllers
 
         }
 
+        public IActionResult Delete(int groupId)
+        {
+            var groupToDelete = _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId);
+
+            if (groupToDelete != null)
+            {
+                _spendersContext.Group.Remove(groupToDelete);
+
+                IEnumerable<GroupSpendersUser> groupSpendersUsersToDelete =
+                    _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
+
+
+
+                foreach (var groupSpendersUser in groupSpendersUsersToDelete)
+                {
+                    IEnumerable<GeneralLedger> generalLedgersToDelete =
+                        _spendersContext.GeneralLedgers.Where(gl =>
+                            gl.GroupSpendersUserId == groupSpendersUser.GroupSpendersUserID);
+
+                        _spendersContext.RemoveRange(generalLedgersToDelete);
+
+                        _spendersContext.GroupSpendersUser.Remove(groupSpendersUser);
+                }
+
+                IEnumerable<Expense> expensesToDelete = _spendersContext.Expenses.Where(e => e.GroupId == groupId);
+
+                _spendersContext.Expenses.RemoveRange(expensesToDelete);
+
+                _spendersContext.SaveChanges();
+
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
