@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Spenders.Areas.Identity.Data;
 using Spenders.Data;
 
 namespace Spenders.Controllers
 {
+    [Authorize]
     public class GroupController : Controller
     {
 
@@ -41,12 +43,6 @@ namespace Spenders.Controllers
             return View(groupDetailsViewModel);
 
         }
-
-        //public ViewResult GetGroupByGroupId(int groupId)
-        //{
-        //    return View(_groupRepository.GetGroupByGroupId(groupId));
-        //}
-
 
         public IActionResult Index()
         {
@@ -111,6 +107,11 @@ namespace Spenders.Controllers
 
             if (groupSpenderUserToDelete != null)
             {
+                var generalLedgerEntriesToDelete = _spendersContext.GeneralLedgers.Where(gl =>
+                    gl.GroupSpendersUserId == groupSpenderUserToDelete.GroupSpendersUserID);
+
+                _spendersContext.GeneralLedgers.RemoveRange(generalLedgerEntriesToDelete);
+
                 _spendersContext.GroupSpendersUser.Remove(groupSpenderUserToDelete);
             }
 

@@ -123,7 +123,9 @@
         $(document).ready(function() {
 
             var msgErr = "@TempData["ErrorMessage"]";
+
             document.getElementById("datePickerInput").value = "@TempData["DefaultDatePickerValue"]";
+
 
             if (msgErr)
                 openErrorModal(msgErr);
@@ -143,7 +145,8 @@
 
         $(function () {
             $("#datepicker").datepicker({
-                defaultDate: "@TempData["DefaultDatePickerValue"]",
+
+                defaultDate: "@TempData["defaultDatePicker"]",
                 onSelect: function (dateText, inst) {
 
                     var dateAsString = dateText; //the first parameter of this function

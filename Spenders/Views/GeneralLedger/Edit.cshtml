@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Spenders.ViewModels.CreateGeneralLedgerEditViewModel
+
+<div class="container-fluid col-md-6 " align="center">
+    <form name="GeneralLedgerForm" asp-action="EditGeneralLedger" asp-route-groupId="@Model.GroupId" asp-route-generalLedgerId="@Model.GeneralLedgerToEdit.GeneralLedgerId">
+        <br />
+        <div id="datepicker"></div>
+        <input id="datePickerInput" name="ExpenseDate" type="hidden" />
+        <br />
+        <div>
+            <div class="form-group col-8">
+                <label asp-for="GeneralLedgerToEdit.GroupSpendersUserId">Select a Spenders user:</label>
+                <span asp-validation-for="GeneralLedgerToEdit.GroupSpendersUserId" class="alert-danger"></span>
+                <select class="form-control" id="GroupSpendersUserID" name="GroupSpendersUserID">
+                    <option value="" disabled selected>Spenders User</option>
+                    @foreach (var groupSpendersUser in @Model.GroupSpendersUsers)
+                    {
+                        if (groupSpendersUser.SpendersUserId == @Model.GeneralLedgerToEdit.GroupSpendersUser.SpendersUser.Id)
+                        {
+                            <option value="@groupSpendersUser.GroupSpendersUserID" selected>@groupSpendersUser.SpendersUser.FirstName</option>                            
+                        }
+                        else
+                        {
+                            <option value="@groupSpendersUser.GroupSpendersUserID">@groupSpendersUser.SpendersUser.FirstName</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-8">
+                <label asp-for="GeneralLedgerToEdit.ExpenseId">Select an expense:</label>
+                <span asp-validation-for="GeneralLedgerToEdit.ExpenseId" class="alert-danger"></span>
+                <select class="form-control" id="expenseName" name="ExpenseId">
+                    <option value="" disabled selected>Expenses</option>
+                    @foreach (var expense in @Model.Expenses)
+                    {
+                        if (expense.ExpenseId == @Model.GeneralLedgerToEdit.ExpenseId)
+                        {
+                            <option value="@expense.ExpenseId" selected="">@expense.Name</option>                            
+                        }
+                        else
+                        {
+                            <option value="@expense.ExpenseId">@expense.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-6">
+                <label asp-for="GeneralLedgerToEdit.Amount">Amount: </label>
+                <input placeholder="@Model.GeneralLedgerToEdit.Amount" min="0" class="form-control" id="Amount" name="Amount" type="number"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <button class="btn btn-success " name="submit" type="submit">
+                    Save Changes
+                </button>
+            </div>
+            <br />
+        </div>
+    </form>
+</div>
+
+
+@section Scripts
+{
+    @*<script src="https://code.jquery.com/jquery-3.6.0.js"></script>*@
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function() {
+
+            var msgErr = "@TempData["ErrorMessage"]";
+            document.getElementById("datePickerInput").value = "@TempData["DefaultDatePickerValue"]";
+
+            if (msgErr)
+                openErrorModal(msgErr);
+        });
+
+        function openErrorModal(strMessage) {
+
+            var myDiv = document.getElementById("MyModalErrorAlertBody");
+            myDiv.innerHTML = strMessage;
+
+            $('#myModalError').modal('show');
+        }
+
+        var dateAsObject;
+        var dateAsString;
+        var formattedDate;
+
+        $(function () {
+            $("#datepicker").datepicker({
+                defaultDate: "@TempData["DefaultDatePickerValue"]",
+                onSelect: function (dateText, inst) {
+
+                    var dateAsString = dateText; //the first parameter of this function
+
+                    dateAsObject = $(this).datepicker('getDate'); //the getDate method
+
+                    formattedDate = dateAsObject.getDate() + "/" + (dateAsObject.getMonth() + 1) + "/" + dateAsObject.getFullYear();
+
+                    document.getElementById("datePickerInput").value = formattedDate;
+
+                }
+
+
+            });
+
+        });
+
+
+    </script>
+}

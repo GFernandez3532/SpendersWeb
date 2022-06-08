@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,6 +16,7 @@ using Spenders.ViewModels;
 
 namespace Spenders.Controllers
 {
+    [Authorize]
     public class GeneralLedgerController : Controller
     {
         private readonly SpendersContext _spendersContext;
@@ -59,20 +61,63 @@ namespace Spenders.Controllers
             return generalLedgerEntriesViewModel;
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int generalLedgerId, int groupId)
         {
-            try
+            IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
+            IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
+
+            var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
+
+            var generalLedgerEntryToEditViewModel = new CreateGeneralLedgerEditViewModel
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                Expenses = expensesForTheGroup,
+                GroupSpendersUsers = groupUsers,
+                GroupId = groupId,
+                GeneralLedgerToEdit = generalLedgerEntry
+            };
+
+            string defaultDatePickerValue = generalLedgerEntry.ExpenseDate.ToString("MM/dd/yyyy");
+
+            TempData["DefaultDatePickerValue"] = defaultDatePickerValue;
+
+            return View(generalLedgerEntryToEditViewModel);
         }
 
+        public ActionResult EditGeneralLedger(GeneralLedger generalLedgerToEdit, int groupId, int generalLedgerId)
+        {
+            if (ModelState.IsValid)
+            {
+                generalLedgerToEdit.GeneralLedgerId = generalLedgerId;
+                generalLedgerToEdit.DateEntered = DateTime.Now;
+                _spendersContext.GeneralLedgers.Update(generalLedgerToEdit);
+            }
+            else
+            {
+                IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
+                IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
+
+                var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerToEdit.GeneralLedgerId);
+
+                var generalLedgerEntryToEditViewModel = new CreateGeneralLedgerEditViewModel
+                {
+                    Expenses = expensesForTheGroup,
+                    GroupSpendersUsers = groupUsers,
+                    GroupId = groupId,
+                    GeneralLedgerToEdit = generalLedgerEntry
+                };
+
+                string defaultDatePickerValue = generalLedgerEntry.ExpenseDate.ToString("MM/dd/yyyy");
+
+                TempData["DefaultDatePickerValue"] = defaultDatePickerValue;
+
+                return View("Edit", generalLedgerEntryToEditViewModel);
+            }
+
+            _spendersContext.SaveChanges();
+
+            return RedirectToAction("Index", new { groupId });
+
+        }
         public ActionResult Delete(int generalLedgerId, int groupId)
         {
             var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
@@ -101,10 +146,11 @@ namespace Spenders.Controllers
 
                 _generalLedgerRepository.CreateGeneralLedger(generalLedger);
                 
-                string defaultDatePickerValue = generalLedger.ExpenseDate.ToString("MM/dd/yyyy");
+                string defaultDatePicker = generalLedger.ExpenseDate.ToString("MM/dd/yyyy");
+                string defaultDatePickerValue = generalLedger.ExpenseDate.ToShortDateString();
 
                 TempData["DefaultDatePickerValue"] = defaultDatePickerValue;
-
+                TempData["defaultDatePicker"] = defaultDatePicker;
             }
             else
             {

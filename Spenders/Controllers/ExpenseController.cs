@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Spenders.Data;
 using Spenders.Models;
 
 namespace Spenders.Controllers
 {
+    [Authorize]
     public class ExpenseController : Controller
     {
         private readonly SpendersContext _spendersContext;

@@ -35,7 +35,11 @@ namespace Spenders.Models
 
         public GeneralLedger GetGeneralLedgerByGeneralLedgerId(int generalLedgerId)
         {
-            return _spendersContext.GeneralLedgers.FirstOrDefault(g => g.GeneralLedgerId == generalLedgerId);
+            return _spendersContext.GeneralLedgers
+                .Include(gl => gl.Expense)
+                .Include(gl => gl.GroupSpendersUser)
+                .ThenInclude(gl => gl.SpendersUser)
+                .FirstOrDefault(g => g.GeneralLedgerId == generalLedgerId);
         }
 
         public IEnumerable<GeneralLedger> GetGeneralLedgerEntriesPerGroupAndMonthYear(int groupId,

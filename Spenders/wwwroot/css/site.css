@@ -3,5 +3,33 @@ for details on configuring this project to bundle and minify static web assets. 
 body {
     background-image: url('/images/pattern.jpg');
     background-repeat: repeat;
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Roboto', sans-serif;
+}
+
+/*for tab control*/
+div.login-logout-tab div.card-header {
+    padding: 0px 0px 12px 0px;
+}
+
+div.login-logout-tab ul.nav-tabs {
+    margin: 0px 0px -12px 0px;
+}
+
+div.login-logout-tab li.nav-item {
+    width: 50%;
+}
+
+div.login-logout-tab a.nav-link {
+    font-size: 25px;
+    color: #495057;
+    text-align: center;
+}
+
+div.card-content {
+    padding: 10px 20px;
+}
+
+/*login form*/
+div.login-form-icon {
+    text-align: center;
 }
