@@ -193,6 +193,7 @@ namespace Spenders.Controllers
             List<SelectListItem> years = new List<SelectListItem>();
             List<Tuple<string, decimal>> listUsersOwing = new List<Tuple<string, decimal>>();
             List<Tuple<string, decimal, decimal>> listExpensesStats = new List<Tuple<string, decimal, decimal>>();
+            decimal TotalAmountSpent = 0;
 
             PopulateMonths(months);
             PopulateYears(years);
@@ -249,7 +250,10 @@ namespace Spenders.Controllers
                 }
 
                 listExpensesStats.Add(new Tuple<string, decimal, decimal>(expenseName, expenseAmountSpent, comparisonPreviousMonth));
+
+                TotalAmountSpent = TotalAmountSpent + expense.Sum();
             }
+
             reportViewModel = new ReportViewModel
             {
                 GroupId = groupId,
@@ -260,7 +264,8 @@ namespace Spenders.Controllers
                 ListExpensesStats = listExpensesStats,
                 SpendersUsersTotalAmounts = totalUsers,
                 ExpensesFinalAmount = totalExpenses,
-                AllGeneralLedgerEntries = allGlEntries
+                AllGeneralLedgerEntries = allGlEntries,
+               TotalAmountSpent = TotalAmountSpent
             };
 
 

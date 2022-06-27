@@ -26,6 +26,7 @@ namespace Spenders.ViewModels
         public IEnumerable<IGrouping<string, decimal>> ExpensesFinalAmount { get; set; }
         public List<Tuple<string, decimal, decimal>> ListExpensesStats { get; set; }
 
+        public decimal TotalAmountSpent { get; set; }
         public IEnumerable<GeneralLedger> AllGeneralLedgerEntries { get; set; }
     }
 }

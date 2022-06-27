@@ -74,135 +74,141 @@
 </div>
 <body >
 
-<div style="background: beige">
-    <div class="container-fluid col-6" align="center">
-        @if (@Model.SpendersUsersOwing != null)
+    <div style="background: beige">
+        <div class="container-fluid col-6" align="center">
+            @if (@Model.SpendersUsersOwing != null)
+            {
+                <hr style="border: 2px solid aqua">
+                <ul class="list-group list-group-flush">
+                    @foreach (var user in @Model.SpendersUsersOwing)
+                    {
+                        if (user.Item2 > 0)
+                        {
+                            <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> owes <span style="color: red; font-weight: bold">$@user.Item2</span> </li>
+
+                        }
+                        else if (user.Item2 < 0)
+                        {
+                            <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> is owed <span style="color: green; font-weight: bold">$@Math.Abs(@user.Item2)</span> </li>
+                        }
+                        else
+                        {
+                            <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> does not owe anything </li>
+                        }
+
+                    }
+
+                </ul>
+
+            }
+        </div>
+        <hr>
+        @if(@Model.TotalAmountSpent != 0)
+        {
+        <div align="center">
+            <h3> The group spent a total of <span style="color:cadetblue; font-weight:bold">@Model.TotalAmountSpent</span></h3>
+        </div>
+        }
+        <br />
+        @if (@Model.ListExpensesStats != null)
         {
             <hr style="border: 2px solid aqua">
-            <ul class="list-group list-group-flush">
-                @foreach (var user in @Model.SpendersUsersOwing)
+            <div class="container-fluid col-8" align="left">
+                <ul class="list-group list-group-flush">
+                    @foreach (var expense in @Model.ListExpensesStats)
+                    {
+                        if (@expense.Item3 < 0)
+                        {
+                            <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">less</span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. A decrease of <span style="color: green; font-weight: bold">@expense.Item3%</span> </li>
+                        }
+                        else if (@expense.Item3 > 0)
+                        {
+                            <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">more</span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. An increase of <span style="color: red; font-weight: bold">@expense.Item3%</span> </li>
+                        }
+                        else
+                        {
+                            <li class="list-group-item">The group spent the same on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month compared to last month </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        }
+        <br />
+        <div class="container-fluid" align="center">
+            <div class="row justify-content-between">
+                @if (Model.SpendersUsersTotalAmounts != null)
                 {
-                    if (user.Item2 > 0)
-                    {
-                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> owes <span style="color: red; font-weight: bold">$@user.Item2</span> </li>
-
-                    }
-                    else if (user.Item2 < 0)
-                    {
-                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> is owed <span style="color: green; font-weight: bold">$@Math.Abs(@user.Item2)</span> </li>
-                    }
-                    else
-                    {
-                        <li class="list-group-item"><span style="color: blue; font-weight: bold">@user.Item1</span> does not owe anything </li>
-                    }
-
+                    <table class="table table-hover small col-4" style="background: white" ;>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Spender</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in @Model.SpendersUsersTotalAmounts)
+                            {
+                                <tr>
+                                    <td>@user.Key</td>
+                                    <td>@user.Sum()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
-
-            </ul>
-
+                <br />
+                @if (Model.ExpensesFinalAmount != null)
+                {
+                    <table class="table table-hover small col-4" style="background: white" ;>
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Expenses</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var expense in @Model.ExpensesFinalAmount)
+                            {
+                                <tr>
+                                    <td>@expense.Key</td>
+                                    <td>@expense.Sum()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+        <br />
+        @if (Model.SpendersUsersTotalAmounts != null)
+        {
+            <div align="center">
+                <hr style="border: 2px solid aqua">
+                <table class="table table-hover small col-10" style="background: white">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Spender</th>
+                            <th scope="col">Expense</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var generalLedgerEntries in @Model.AllGeneralLedgerEntries)
+                        {
+                            <tr>
+                                <td>@generalLedgerEntries.GroupSpendersUser.SpendersUser.FirstName</td>
+                                <td>@generalLedgerEntries.Expense.Name</td>
+                                <td>@generalLedgerEntries.Amount</td>
+                                <td>@generalLedgerEntries.ExpenseDate.ToShortDateString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
-    <hr>
-    <br/>
-    @if (@Model.ListExpensesStats != null)
-    {
-        <hr style="border: 2px solid aqua">
-        <div class="container-fluid col-8" align="left">
-            <ul class="list-group list-group-flush">
-                @foreach (var expense in @Model.ListExpensesStats)
-                {
-                    if (@expense.Item3 > 0)
-                    {
-                        <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">less</span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. A decrease of <span style="color: green; font-weight: bold">@expense.Item3%</span> </li>
-                    }
-                    else if (@expense.Item3 < 0)
-                    {
-                        <li class="list-group-item">The group spent <span font-weight: style="text-decoration: underline">more </span> on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month. An increase of <span style="color: red; font-weight: bold">@expense.Item3%</span> </li>
-                    }
-                    else
-                    {
-                        <li class="list-group-item">The group spent the same on <span style="color: purple; font-weight: bold">@expense.Item1</span> this month compared to last month </li>
-                    }
-                }
-
-            </ul>
-        </div>
-    }
-    <br/>
-    <div class="container-fluid" align="center">
-        <div class="row justify-content-between">
-            @if (Model.SpendersUsersTotalAmounts != null)
-            {
-                <table class="table table-hover small col-4" style="background: white" ;>
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Spender</th>
-                        <th scope="col">Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var user in @Model.SpendersUsersTotalAmounts)
-                    {
-                        <tr>
-                            <td>@user.Key</td>
-                            <td>@user.Sum()</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            }
-            <br/>
-            @if (Model.ExpensesFinalAmount != null)
-            {
-                <table class="table table-hover small col-4" style="background: white";>
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Expenses</th>
-                        <th scope="col">Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var expense in @Model.ExpensesFinalAmount)
-                    {
-                        <tr>
-                            <td>@expense.Key</td>
-                            <td>@expense.Sum()</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            }
-        </div>
-    </div>
-    <br/>
-    @if (Model.SpendersUsersTotalAmounts != null)
-    {
-        <div align="center">
-            <hr style="border: 2px solid aqua">
-            <table class="table table-hover small col-10" style="background: white">
-                <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Spender</th>
-                    <th scope="col">Expense</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var generalLedgerEntries in @Model.AllGeneralLedgerEntries)
-                {
-                    <tr>
-                        <td>@generalLedgerEntries.GroupSpendersUser.SpendersUser.FirstName</td>
-                        <td>@generalLedgerEntries.Expense.Name</td>
-                        <td>@generalLedgerEntries.Amount</td>
-                        <td>@generalLedgerEntries.ExpenseDate.ToShortDateString()</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-    }
-</div>
 </body>
 
 
