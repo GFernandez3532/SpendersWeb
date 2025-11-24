@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Security.Claims;
 using Spenders.Areas.Identity.Data;
 using Spenders.Data;
 using Spenders.Models;
@@ -37,6 +38,11 @@ namespace Spenders.Controllers
         // GET: GeneralLedgerController
         public IActionResult Index(int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             var generalLedgerEntriesViewModel = CreateGeneralLedgerEntriesViewModel(groupId);
 
             return View(generalLedgerEntriesViewModel);
@@ -63,10 +69,20 @@ namespace Spenders.Controllers
 
         public ActionResult Edit(int generalLedgerId, int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
             IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
 
             var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
+
+            if (generalLedgerEntry == null || generalLedgerEntry.GroupSpendersUser.GroupId != groupId)
+            {
+                return NotFound();
+            }
 
             var generalLedgerEntryToEditViewModel = new CreateGeneralLedgerEditViewModel
             {
@@ -85,6 +101,18 @@ namespace Spenders.Controllers
 
         public ActionResult EditGeneralLedger(GeneralLedger generalLedgerToEdit, int groupId, int generalLedgerId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
+            var existingLedger = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
+
+            if (existingLedger == null || existingLedger.GroupSpendersUser.GroupId != groupId)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 generalLedgerToEdit.GeneralLedgerId = generalLedgerId;
@@ -96,7 +124,7 @@ namespace Spenders.Controllers
                 IEnumerable<Expense> expensesForTheGroup = _expenseRepository.GetAllExpensesByGroupId(groupId);
                 IEnumerable<GroupSpendersUser> groupUsers = _groupSpendersUserRepository.GetGroupSpendersUserByGroupId(groupId);
 
-                var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerToEdit.GeneralLedgerId);
+                var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
 
                 var generalLedgerEntryToEditViewModel = new CreateGeneralLedgerEditViewModel
                 {
@@ -120,9 +148,14 @@ namespace Spenders.Controllers
         }
         public ActionResult Delete(int generalLedgerId, int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             var generalLedgerEntry = _generalLedgerRepository.GetGeneralLedgerByGeneralLedgerId(generalLedgerId);
 
-            if (generalLedgerEntry != null)
+            if (generalLedgerEntry != null && generalLedgerEntry.GroupSpendersUser.GroupId == groupId)
             {
                 _spendersContext.GeneralLedgers.Remove(generalLedgerEntry);
             }
@@ -136,10 +169,22 @@ namespace Spenders.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateGeneralLedgerEntry(GeneralLedger generalLedger, int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
+            var membership = _groupSpendersUserRepository.GetGroupSpendersUserById(generalLedger.GroupSpendersUserId);
+
+            if (membership == null || membership.GroupId != groupId)
+            {
+                return BadRequest();
+            }
+
             if (ModelState.IsValid)
             {
                 generalLedger.GroupSpendersUser = _groupSpendersUserRepository.GetGroupSpendersUserById(generalLedger.GroupSpendersUserId);
-                
+
                 generalLedger.ExpenseDate = generalLedger.ExpenseDate.Date;
 
                 generalLedger.DateEntered = DateTime.Now;
@@ -167,6 +212,11 @@ namespace Spenders.Controllers
 
         public IActionResult ReportsIndex(int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             List<SelectListItem> months = new List<SelectListItem>();
             List<SelectListItem> years = new List<SelectListItem>();
 
@@ -188,6 +238,11 @@ namespace Spenders.Controllers
 
         public IActionResult ReportMonthlyProcess(int groupId, int selectedMonth, int selectedYear)
         {
+
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
 
             List<SelectListItem> months = new List<SelectListItem>();
             List<SelectListItem> years = new List<SelectListItem>();
@@ -274,6 +329,11 @@ namespace Spenders.Controllers
 
         public IActionResult ReportCustomProcess(int groupId, DateTime dateFrom, DateTime dateTo)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             List<SelectListItem> months = new List<SelectListItem>();
             List<SelectListItem> years = new List<SelectListItem>();
 
@@ -332,10 +392,10 @@ namespace Spenders.Controllers
             return averageAmountPerUser;
         }
 
-        private decimal CalculateAverageAmountPerUser(int groupId, DateTime dateTo, DateTime dateFrom, IEnumerable<IGrouping<string, decimal>> totalUsers)
+        private decimal CalculateAverageAmountPerUser(int groupId, DateTime dateFrom, DateTime dateTo, IEnumerable<IGrouping<string, decimal>> totalUsers)
         {
             decimal totalAmountSpentInPeriod =
-                _generalLedgerRepository.GetTotalAmountSpentPeriodGroupAndCustomDate(groupId, dateTo, dateFrom);
+                _generalLedgerRepository.GetTotalAmountSpentPeriodGroupAndCustomDate(groupId, dateFrom, dateTo);
 
             int totalAmountOfSpenders = totalUsers.Count();
 
@@ -366,6 +426,18 @@ namespace Spenders.Controllers
             months.Add(new SelectListItem { Text = "October", Value = "10" });
             months.Add(new SelectListItem { Text = "November", Value = "11" });
             months.Add(new SelectListItem { Text = "December", Value = "12" });
+        }
+
+        private bool UserIsMemberOfGroup(int groupId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (currentUserId == null)
+            {
+                return false;
+            }
+
+            return _spendersContext.GroupSpendersUser.Any(gsu => gsu.GroupId == groupId && gsu.SpendersUserId == currentUserId);
         }
     }
 }

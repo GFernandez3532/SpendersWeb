@@ -56,29 +56,47 @@ namespace Spenders.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreateGroup(string groupName, string groupDescription)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (string.IsNullOrWhiteSpace(groupName))
+            {
+                TempData["ErrorMessage"] = "Group name is required.";
+                return RedirectToAction("Index");
+            }
+
+            if (_groupRepository.GetGroupByName(groupName.Trim()) != null)
+            {
+                TempData["ErrorMessage"] = "A group with this name already exists.";
+                return RedirectToAction("Index");
+            }
+
             var group = new Group
             {
-                Name = groupName,
-                Description = groupDescription
+                Name = groupName.Trim(),
+                Description = string.IsNullOrWhiteSpace(groupDescription) ? null : groupDescription.Trim()
             };
 
             if (ModelState.IsValid)
             {
                 _groupRepository.CreateGroup(group);
-            };
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Unable to create group. Please fix validation errors.";
+                return RedirectToAction("Index");
+            }
 
             GroupSpendersUser newGroupSpendersUser = new GroupSpendersUser();
 
-            newGroupSpendersUser.GroupId = _groupRepository.GetGroupByName(group.Name).GroupId;
+            newGroupSpendersUser.GroupId = group.GroupId;
 
             newGroupSpendersUser.SpendersUserId = currentUserId;
 
             _groupSpendersUserRepository.CreateGroupSpendersUser(newGroupSpendersUser);
-            
+
             _spendersContext.SaveChanges();
 
             return RedirectToAction("Details", new { newGroupSpendersUser.GroupId });
@@ -86,6 +104,10 @@ namespace Spenders.Controllers
 
         public IActionResult Details(int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
 
          GroupAndExpensesDetailViewModel groupAndExpensesDetailViewModel =   new GroupAndExpensesDetailViewModel
             {
@@ -103,7 +125,17 @@ namespace Spenders.Controllers
 
         public IActionResult RemoveUserFromGroup(int userId, int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             var groupSpenderUserToDelete = _groupSpendersUserRepository.GetGroupSpendersUserById(userId);
+
+            if (groupSpenderUserToDelete?.GroupId != groupId)
+            {
+                return NotFound();
+            }
 
             if (groupSpenderUserToDelete != null)
             {
@@ -121,9 +153,22 @@ namespace Spenders.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddUserToGroup(int groupId, string userEmail)
         {
             string errMessage;
+
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
+            var groupExists = _spendersContext.Group.Any(g => g.GroupId == groupId);
+
+            if (!groupExists)
+            {
+                return NotFound();
+            }
 
             var newUserToGroup = _spendersContext.SpendersUser.FirstOrDefault(u => u.Email == userEmail);
 
@@ -168,6 +213,11 @@ namespace Spenders.Controllers
 
         public IActionResult Delete(int groupId)
         {
+            if (!UserIsMemberOfGroup(groupId))
+            {
+                return Forbid();
+            }
+
             var groupToDelete = _spendersContext.Group.FirstOrDefault(g => g.GroupId == groupId);
 
             if (groupToDelete != null)
@@ -199,6 +249,18 @@ namespace Spenders.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private bool UserIsMemberOfGroup(int groupId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (currentUserId == null)
+            {
+                return false;
+            }
+
+            return _spendersContext.GroupSpendersUser.Any(gsu => gsu.GroupId == groupId && gsu.SpendersUserId == currentUserId);
         }
     }
 }
